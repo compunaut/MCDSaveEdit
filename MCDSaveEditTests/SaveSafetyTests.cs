@@ -75,6 +75,43 @@ namespace MCDSaveEditTests
         }
 
         [TestMethod]
+        public async Task DuplicatePreservesAllSavedMetadataExceptPlacement()
+        {
+            const string json = """
+                {"items":[{
+                  "armorproperties":[{"id":"armor","rarity":"Rare","futureArmor":13}],
+                  "cloned":true,"enchantments":[{"id":"enchant","investedPoints":12,"level":3,"futureEnchant":11}],
+                  "equipmentSlot":"MeleeGear","gifted":true,"inventoryIndex":7,"modified":true,"markedNew":false,
+                  "netheriteEnchant":{"id":"netherite","investedPoints":9,"level":2,"futureNetherite":{"flag":true}},
+                  "power":123.5,"rarity":"Unique","timesmodified":7,"type":"Sword","upgraded":true,
+                  "futureItem":{"nested":9}
+                }]}
+                """;
+            using var input = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            var profile = await ProfileParser.Read(input);
+            using var originalStream = await ProfileParser.Write(profile);
+            using var original = await JsonDocument.ParseAsync(originalStream);
+            var expected = System.Text.Json.Nodes.JsonNode.Parse(original.RootElement.GetProperty("items")[0].GetRawText())!.AsObject();
+            expected.Remove("equipmentSlot");
+            expected.Remove("inventoryIndex");
+            var source = profile.Items[0];
+            var copy = source.Copy();
+            Assert.IsNull(copy.EquipmentSlot);
+            Assert.IsNull(copy.InventoryIndex);
+            Assert.AreNotSame(source.Enchantments, copy.Enchantments);
+            Assert.AreNotSame(source.Enchantments[0], copy.Enchantments[0]);
+            Assert.AreNotSame(source.NetheriteEnchant, copy.NetheriteEnchant);
+            Assert.AreNotSame(source.AdditionalData, copy.AdditionalData);
+            profile.Items = new[] { copy };
+            using var duplicatedStream = await ProfileParser.Write(profile);
+            using var duplicated = await JsonDocument.ParseAsync(duplicatedStream);
+            using var expectedDocument = JsonDocument.Parse(expected.ToJsonString());
+            Assert.IsTrue(JsonElement.DeepEquals(expectedDocument.RootElement, duplicated.RootElement.GetProperty("items")[0]));
+            Assert.AreEqual(12L, source.Enchantments[0].InvestedPoints);
+            Assert.AreEqual(7, source.TimesModified);
+        }
+
+        [TestMethod]
         public async Task ParserRejectsIncompleteObject()
         {
             using var input = new MemoryStream(Encoding.UTF8.GetBytes("{\"name\":\"unterminated}"));

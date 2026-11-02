@@ -1,4 +1,4 @@
-﻿namespace PakReader.Parsers.Objects
+namespace PakReader.Parsers.Objects
 {
     public readonly struct FMovieSceneSegment : IUStruct
     {
@@ -15,7 +15,7 @@
             Range = new TRange<FFrameNumber>(reader);
             ID = reader.ReadInt32();
             bAllowEmpty = reader.ReadUInt32() != 0;
-            Impls = new UScriptStruct[reader.ReadUInt32()];
+            Impls = new UScriptStruct[reader.ValidateCount(reader.ReadUInt32())];
             for (int i = 0; i < Impls.Length; i++)
             {
                 Impls[i] = new UScriptStruct(reader, "SectionEvaluationData");

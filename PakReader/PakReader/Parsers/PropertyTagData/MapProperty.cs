@@ -17,7 +17,7 @@ namespace PakReader.Parsers.PropertyTagData
                 throw new NotImplementedException("Parsing of non-zero NumKeysToRemove maps aren't supported yet.");
             }
 
-            var NumEntries = reader.ReadInt32();
+            var NumEntries = reader.ValidateCount(reader.ReadInt32(), 2, 128);
             var dict = new Dictionary<object, object>(NumEntries);
             for (int i = 0; i < NumEntries; i++)
             {

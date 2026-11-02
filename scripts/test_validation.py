@@ -85,6 +85,14 @@ class ArtifactGateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "no matching"):
             self.validate()
 
+    def test_nested_application_name_requires_native_provenance(self):
+        nested = self.output / "unexpected" / "MCDSaveEdit.exe"
+        nested.parent.mkdir()
+        nested.write_bytes(native_pe() + b"not-an-sdk-generated-apphost")
+        with self.assertRaisesRegex(ValueError, "no matching restored NuGet origin: unexpected/MCDSaveEdit.exe"):
+            self.validate()
+        self.assertFalse((self.evidence / "artifact-inventory.json").exists())
+
     def test_publish_tampering_rejected(self):
         (self.output / "libSkiaSharp.dll").write_bytes(native_pe() + b"tampering")
         with self.assertRaisesRegex(ValueError, "no matching"):

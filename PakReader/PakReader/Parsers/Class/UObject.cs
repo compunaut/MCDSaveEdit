@@ -12,37 +12,40 @@ namespace PakReader.Parsers.Class
         readonly Dictionary<string, object> Dict;
 
         // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L930
-        public UObject(PackageReader reader) : this(reader, reader.ExportMap.Sum(e => e.SerialSize), false) { }
-        public UObject(PackageReader reader, bool structFallback) : this(reader, reader.ExportMap.Sum(e => e.SerialSize), structFallback) { }
+        public UObject(PackageReader reader) : this(reader, ((System.IO.BinaryReader)reader).BaseStream.Length, false) { }
+        public UObject(PackageReader reader, bool structFallback) : this(reader, ((System.IO.BinaryReader)reader).BaseStream.Length, structFallback) { }
         public UObject(PackageReader reader, long maxSize) : this(reader, maxSize, false) { }
 
         // Structs that don't use binary serialization
         // https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L2197
         internal UObject(PackageReader reader, long maxSize, bool structFallback)
         {
+            using var objectScope = reader.EnterScope(System.Math.Min(maxSize, ((System.IO.BinaryReader)reader).BaseStream.Length));
             var properties = new Dictionary<string, object>();
             int num = 1;
 
             while (true)
             {
+                long tagStart = reader.Position;
                 var Tag = new FPropertyTag(reader);
                 if (Tag.Name.IsNone || Tag.Name.String == null)
                     break;
 
                 var pos = reader.Position;
-                var obj = BaseProperty.ReadAsObject(reader, Tag, Tag.Type, ReadType.NORMAL) ?? null;
+                object obj;
+                using (reader.EnterProperty(Tag.Size))
+                {
+                    obj = BaseProperty.ReadAsObject(reader, Tag, Tag.Type, ReadType.NORMAL) ?? null;
+                    // Unknown/partially decoded values may leave trailing payload bytes.
+                    reader.Position = checked(pos + Tag.Size);
+                }
+                if (reader.Position <= tagStart)
+                    throw new System.IO.InvalidDataException("Package property made no forward progress.");
 
                 var key = properties.ContainsKey(Tag.Name.String) ? $"{Tag.Name.String}_NK{num++:00}" : Tag.Name.String;
                 properties[key] = obj;
                 if (obj == null) break;
 
-                if (Tag.Size + pos != reader.Position)
-                {
-#if DEBUG
-                    System.Diagnostics.Debug.WriteLine($"Didn't read {key} correctly (at {reader.Position}, should be {Tag.Size + pos}, {Tag.Size + pos - reader.Position} behind)");
-#endif
-                    reader.Position = Tag.Size + pos;
-                }
             }
             Dict = properties;
 

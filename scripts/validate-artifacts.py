@@ -116,7 +116,7 @@ def validate(output, assets_path, rid, evidence, integrity_tool=None, dotnet_hos
             if not managed:
                 if machine != expected_machine:
                     raise ValueError(f"Wrong native architecture: {relative}")
-                if lower == "mcdsaveedit.exe":
+                if relative == "MCDSaveEdit.exe":
                     record["origin"] = "SDK-generated apphost (not a NuGet native library)"
                 else:
                     matches = [p for p in origins.get(lower, []) if p["sha256"] == record["sha256"]]

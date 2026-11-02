@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace PakReader.Parsers.Objects
 {
@@ -8,8 +8,9 @@ namespace PakReader.Parsers.Objects
 
         internal FLevelSequenceObjectReferenceMap(PackageReader reader)
         {
-            Map = new Dictionary<FGuid, FLevelSequenceLegacyObjectReference>(reader.ReadInt32());
-            for (int i = 0; i < Map.Count; i++)
+            int count = reader.ValidateCount(reader.ReadInt32(), 16, 128);
+            Map = new Dictionary<FGuid, FLevelSequenceLegacyObjectReference>(count);
+            for (int i = 0; i < count; i++)
             {
                 Map[new FGuid(reader)] = new FLevelSequenceLegacyObjectReference(reader);
             }

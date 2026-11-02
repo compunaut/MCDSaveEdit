@@ -22,6 +22,7 @@ namespace PakReader.Parsers.Objects
 
             if (ElementCount < 0 || ElementCount > 256 * 1024 * 1024)
                 throw new InvalidDataException("Invalid bulk payload size.");
+            reader.ReserveAllocation(ElementCount);
             Data = null;
             if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0 && ElementCount > 0)
             {

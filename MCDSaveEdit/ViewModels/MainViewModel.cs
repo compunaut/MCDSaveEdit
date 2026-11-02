@@ -121,8 +121,16 @@ namespace MCDSaveEdit.ViewModels
 
         public void setProfile(string filePath, ProfileSaveFile profile)
         {
-            openedPath = Path.GetFullPath(filePath);
-            openedSnapshot = FileSnapshot.Capture(filePath);
+            string path = Path.GetFullPath(filePath);
+            // A language change rebuilds the view with this same in-memory profile.
+            // It has not reread disk content and must retain its original save baseline.
+            bool isViewReload = string.Equals(openedPath, path, StringComparison.OrdinalIgnoreCase)
+                && ReferenceEquals(profileModel.profile.value, profile);
+            if (!isViewReload)
+            {
+                openedPath = path;
+                openedSnapshot = FileSnapshot.Capture(path);
+            }
             profileModel.filePath = filePath;
             profileModel.profile.setValue = profile;
         }

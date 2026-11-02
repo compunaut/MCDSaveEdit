@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PakReader.Parsers.Objects
@@ -21,7 +21,7 @@ namespace PakReader.Parsers.Objects
 
             var nameReader = new FNameTableArchiveReader(reader);
 
-            var LocalNumAssets = reader.ReadInt32();
+            var LocalNumAssets = reader.ValidateCount(reader.ReadInt32());
             PreallocatedAssetDataBuffers = new FAssetData[LocalNumAssets];
 
             for (int i = 0; i < LocalNumAssets; i++)
@@ -29,7 +29,7 @@ namespace PakReader.Parsers.Objects
                 PreallocatedAssetDataBuffers[i] = new FAssetData(nameReader);
             }
 
-            var LocalNumDependsNodes = reader.ReadInt32();
+            var LocalNumDependsNodes = reader.ValidateCount(reader.ReadInt32());
             PreallocatedDependsNodeDataBuffers = new FDependsNode[LocalNumDependsNodes];
             for (int i = 0; i < LocalNumDependsNodes; i++)
             {
@@ -50,6 +50,7 @@ namespace PakReader.Parsers.Objects
                 DepCounts[0] = reader.ReadInt32();
 
                 PreallocatedDependsNodeDataBuffers[i].Identifier = AssetIdentifier;
+                foreach (var count in DepCounts.Values) reader.ValidateCount(count, 4, 8);
                 PreallocatedDependsNodeDataBuffers[i].Reserve(DepCounts);
 
                 for (int x = 0; x < DepCounts[EAssetRegistryDependencyType.Hard]; ++x)
@@ -108,7 +109,7 @@ namespace PakReader.Parsers.Objects
                 }
             }
 
-            int LocalNumPackageData = reader.ReadInt32();
+            int LocalNumPackageData = reader.ValidateCount(reader.ReadInt32());
             PreallocatedPackageDataBuffers = new FAssetPackageData[LocalNumPackageData];
 
             var bSerializeHash = Version < FAssetRegistryVersion.Type.AddedCookedMD5Hash;

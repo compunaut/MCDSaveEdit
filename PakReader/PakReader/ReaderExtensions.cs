@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace PakReader
 {
@@ -36,11 +37,30 @@ namespace PakReader
                 throw new InvalidDataException("Archive range is invalid or exceeds the supported limit.");
         }
 
+        private sealed class AllocationBudget { internal long Remaining = 256L * 1024 * 1024; }
+        private static readonly ConditionalWeakTable<Stream, AllocationBudget> AllocationBudgets = new();
+
+        internal static int ValidateCount(this BinaryReader reader, long count, int minimumBytes = 1, int allocationBytes = 64)
+        {
+            long remaining = reader.BaseStream.Length - reader.BaseStream.Position;
+            if (count < 0 || count > 1000000 || minimumBytes <= 0 || count > remaining / minimumBytes)
+                throw new InvalidDataException("Archive collection count is invalid.");
+            long allocation = checked(count * allocationBytes);
+            reader.ReserveAllocation(allocation);
+            return (int)count;
+        }
+
+        internal static void ReserveAllocation(this BinaryReader reader, long allocation)
+        {
+            var budget = AllocationBudgets.GetOrCreateValue(reader.BaseStream);
+            if (allocation < 0 || allocation > budget.Remaining)
+                throw new InvalidDataException("Archive collection allocation budget exceeded.");
+            budget.Remaining -= allocation;
+        }
+
         public static T[] ReadTArray<T>(this BinaryReader reader, Func<T> Getter)
         {
-            int SerializeNum = reader.ReadInt32();
-            if (SerializeNum < 0 || SerializeNum > 1000000 || SerializeNum > reader.BaseStream.Length - reader.BaseStream.Position)
-                throw new InvalidDataException("Archive array count is invalid.");
+            int SerializeNum = reader.ValidateCount(reader.ReadInt32());
             T[] A = new T[SerializeNum];
             for(int i = 0; i < SerializeNum; i++)
             {

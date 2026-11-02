@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace PakReader.Parsers.Objects
@@ -140,7 +140,7 @@ namespace PakReader.Parsers.Objects
             Guid = new FGuid(reader);
 
             {
-                var GenerationCount = reader.ReadInt32();
+                var GenerationCount = reader.ValidateCount(reader.ReadInt32(), 8);
                 if (GenerationCount > 0)
                 {
                     Generations = new FGenerationInfo[GenerationCount];

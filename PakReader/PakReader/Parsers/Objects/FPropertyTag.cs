@@ -1,4 +1,4 @@
-﻿namespace PakReader.Parsers.Objects
+namespace PakReader.Parsers.Objects
 {
     readonly struct FPropertyTag
     {
@@ -41,6 +41,7 @@
 
             Type = reader.ReadFName();
             Size = reader.ReadInt32();
+            if (Size < 0) throw new System.IO.InvalidDataException("Negative property payload size.");
             ArrayIndex = reader.ReadInt32();
 
             Position = reader.Position; // actual

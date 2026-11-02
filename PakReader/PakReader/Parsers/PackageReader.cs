@@ -8,7 +8,9 @@ namespace PakReader.Parsers
 {
     public sealed class PackageReader
     {
-        BinaryReader Loader { get; }
+        BinaryReader Loader { get; set; }
+        int nestingDepth;
+        int propertyCount;
 
         public FPackageFileSummary PackageFileSummary { get; }
         FNameEntrySerialized[] NameMap { get; }
@@ -52,6 +54,7 @@ namespace PakReader.Parsers
                     long exportOffset = checked(Export.SerialOffset - PackageFileSummary.TotalHeaderSize);
                     ReaderExtensions.ValidateRange(Loader.BaseStream, exportOffset, Export.SerialSize);
                     var pos = Position = exportOffset;
+                    using var exportScope = EnterScope(checked(exportOffset + Export.SerialSize));
                     DataExports[i] = ExportType.String switch
                     {
                         "Texture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
@@ -131,6 +134,70 @@ namespace PakReader.Parsers
             if (count < 0 || count > 1000000 || offset < 0 || offset > Loader.BaseStream.Length ||
                 count > (Loader.BaseStream.Length - offset) / 4)
                 throw new InvalidDataException("Invalid package table count or offset.");
+            long saved = Position;
+            Position = offset;
+            Loader.ValidateCount(count, 4);
+            Position = saved;
+        }
+
+        public int ValidateCount(long count, int minimumBytes = 1, int allocationBytes = 64)
+            => Loader.ValidateCount(count, minimumBytes, allocationBytes);
+
+        internal IDisposable EnterScope(long end)
+        {
+            if (Loader.BaseStream is not ParseStream)
+                Loader = new BinaryReader(new ParseStream(Loader.BaseStream), System.Text.Encoding.UTF8, true);
+            var stream = (ParseStream)Loader.BaseStream;
+            if (end < Position || end > stream.Length || nestingDepth >= 64)
+                throw new InvalidDataException("Invalid package payload boundary or nesting depth.");
+            nestingDepth++;
+            long start = stream.Start, previousEnd = stream.End;
+            stream.Start = Position;
+            stream.End = end;
+            return new Scope(() => { stream.Start = start; stream.End = previousEnd; nestingDepth--; });
+        }
+
+        internal IDisposable EnterProperty(int size)
+        {
+            if (size < 0 || ++propertyCount > 1000000)
+                throw new InvalidDataException("Invalid property size or excessive property count.");
+            return EnterScope(checked(Position + size));
+        }
+
+        private sealed class Scope : IDisposable
+        {
+            Action? close;
+            internal Scope(Action close) { this.close = close; }
+            public void Dispose() { var action = close; close = null; action?.Invoke(); }
+        }
+
+        // All implicit BinaryReader consumers share these bounds, including bulk and
+        // nested struct readers, so they cannot read into the next export/property.
+        private sealed class ParseStream : Stream
+        {
+            readonly Stream source;
+            internal long Start, End;
+            internal ParseStream(Stream source) { this.source = source; End = source.Length; }
+            public override bool CanRead => true;
+            public override bool CanSeek => true;
+            public override bool CanWrite => false;
+            public override long Length => End;
+            public override long Position
+            {
+                get => source.Position;
+                set { if (value < Start || value > End) throw new InvalidDataException("Package seek exceeds its payload."); source.Position = value; }
+            }
+            public override int Read(byte[] buffer, int offset, int count) => source.Read(buffer, offset, (int)Math.Min(count, End - Position));
+            public override int Read(Span<byte> buffer) => source.Read(buffer[..(int)Math.Min(buffer.Length, End - Position)]);
+            public override int ReadByte() => Position < End ? source.ReadByte() : -1;
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                Position = checked((origin == SeekOrigin.Begin ? 0 : origin == SeekOrigin.Current ? Position : End) + offset);
+                return Position;
+            }
+            public override void Flush() { }
+            public override void SetLength(long value) => throw new NotSupportedException();
+            public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
         }
 
         public FName ReadFName()

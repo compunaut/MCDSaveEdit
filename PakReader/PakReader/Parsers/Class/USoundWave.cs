@@ -1,4 +1,4 @@
-﻿using PakReader.Parsers.Objects;
+using PakReader.Parsers.Objects;
 using PakReader.Parsers.PropertyTagData;
 using System;
 using System.IO;
@@ -64,7 +64,7 @@ namespace PakReader.Parsers.Class
             {
                 if (bCooked)
                 {
-                    CompressedFormatData = new FFormatContainer[reader.ReadInt32()];
+                    CompressedFormatData = new FFormatContainer[reader.ValidateCount(reader.ReadInt32(), 28)];
                     for (int i = 0; i < CompressedFormatData.Length; i++)
                     {
                         CompressedFormatData[i] = new FFormatContainer(reader, ubulk, ubulkOffset);
@@ -81,7 +81,7 @@ namespace PakReader.Parsers.Class
             else
             {
                 CompressedDataGuid = new FGuid(reader);
-                Chunks = new FStreamedAudioChunk[reader.ReadInt32()];
+                Chunks = new FStreamedAudioChunk[reader.ValidateCount(reader.ReadInt32(), 28)];
                 AudioFormat = reader.ReadFName();
                 for (int i = 0; i < Chunks.Length; i++)
                 {

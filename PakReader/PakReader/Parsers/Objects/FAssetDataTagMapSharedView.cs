@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace PakReader.Parsers.Objects
 {
@@ -8,7 +8,7 @@ namespace PakReader.Parsers.Objects
 
         internal FAssetDataTagMapSharedView(FNameTableArchiveReader reader)
         {
-            int l = reader.Loader.ReadInt32();
+            int l = reader.Loader.ValidateCount(reader.Loader.ReadInt32(), 12);
             Map = new SortedList<string, string>(l);
             for (int i = 0; i < l; i++)
             {

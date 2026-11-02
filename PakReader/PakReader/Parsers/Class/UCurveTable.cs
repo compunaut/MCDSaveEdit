@@ -1,4 +1,4 @@
-﻿using PakReader.Parsers.Objects;
+using PakReader.Parsers.Objects;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -13,7 +13,7 @@ namespace PakReader.Parsers.Class
         {
             _ = new UObject(reader); //will break
 
-            int NumRows = reader.ReadInt32();
+            int NumRows = reader.ValidateCount(reader.ReadInt32(), 8, 128);
             CurveTableMode = (ECurveTableMode)reader.ReadByte();
 
             RowMap = new Dictionary<string, object>();

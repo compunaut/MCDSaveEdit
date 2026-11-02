@@ -31,6 +31,7 @@ namespace MCDSaveEdit.Save.Models.Profiles
             var copy = new Enchantment();
             copy.Id = this.Id;
             copy.Level = this.Level;
+            copy.InvestedPoints = this.InvestedPoints;
             copy.AdditionalData = this.AdditionalData == null ? null : new System.Collections.Generic.Dictionary<string, System.Text.Json.JsonElement>(this.AdditionalData);
             return copy;
         }

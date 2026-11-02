@@ -8,7 +8,7 @@ namespace PakReader.Parsers.PropertyTagData
         {
             Position = reader.Position;
 
-            int length = reader.ReadInt32();
+            int length = reader.ValidateCount(reader.ReadInt32());
             Value = new BaseProperty[length];
 
             FPropertyTag InnerTag = default;

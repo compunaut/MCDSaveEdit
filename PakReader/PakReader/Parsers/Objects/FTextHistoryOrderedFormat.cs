@@ -14,7 +14,7 @@ namespace PakReader.Parsers.Objects
             internal OrderedFormat(PackageReader reader)
             {
                 SourceFmt = new FText(reader);
-                Arguments = new FFormatArgumentValue[reader.ReadInt32()];
+                Arguments = new FFormatArgumentValue[reader.ValidateCount(reader.ReadInt32())];
                 for (int i = 0; i < Arguments.Length; i++)
                 {
                     Arguments[i] = new FFormatArgumentValue(reader);

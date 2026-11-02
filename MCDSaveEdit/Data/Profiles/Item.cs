@@ -68,6 +68,9 @@ namespace MCDSaveEdit.Save.Models.Profiles
             //NOTE: deliberately skipping EquipmentSlot and InventoryIndex
             copy.Armorproperties = this.Armorproperties?.deepClone()?.ToArray();
             copy.Enchantments = this.Enchantments?.deepClone()?.ToArray();
+            copy.Cloned = this.Cloned;
+            copy.Modified = this.Modified;
+            copy.TimesModified = this.TimesModified;
             copy.Gifted = this.Gifted;
             copy.MarkedNew = this.MarkedNew;
             copy.NetheriteEnchant = this.NetheriteEnchant?.Copy();

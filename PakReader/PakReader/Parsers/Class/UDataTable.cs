@@ -13,7 +13,7 @@ namespace PakReader.Parsers.Class
         {
             _ = new UObject(reader);
 
-            int NumRows = reader.ReadInt32();
+            int NumRows = reader.ValidateCount(reader.ReadInt32(), 8, 128);
             RowMap = new Dictionary<string, object>();
             for (int i = 0; i < NumRows; i++)
             {
