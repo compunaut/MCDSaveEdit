@@ -35,7 +35,7 @@ namespace MCDSaveEdit.UI
         private void setConstantStrings(string? defaultPath, bool allowNoContent)
         {
             Title = R.GAME_FILES_WINDOW_TITLE;
-            messageTextBlock.Text = R.GAME_FILES_WINDOW_MESSAGE;
+            messageTextBlock.Text = "Choose your installed game's PAK folder to load item images and translations. Encrypted archives also require a matching game-content AES key. Save editing does not require game content.";
             gameFilesGroupBox.Header = R.GAME_FILES_WINDOW_GROUPBOX_HEADER;
             pathLabel.Content = R.GAME_FILES_WINDOW_TEXTBOX_LABEL;
             pathTextBox.Text = defaultPath ?? string.Empty;
@@ -64,6 +64,16 @@ namespace MCDSaveEdit.UI
             EventLogger.logEvent("okButton_Click", new Dictionary<string, object> { { "isValidPath", isValidPath } });
             if (isValidPath)
             {
+                if (!string.IsNullOrWhiteSpace(keyPasswordBox.Password))
+                {
+                    try { GameContentKeys.SetSessionKey(keyPasswordBox.Password); }
+                    catch (InvalidOperationException error)
+                    {
+                        MessageBox.Show(this, error.Message, R.ERROR);
+                        return;
+                    }
+                    keyPasswordBox.Clear();
+                }
                 result = GameFilesWindowResult.useSelectedPath;
                 this.Close();
                 return;

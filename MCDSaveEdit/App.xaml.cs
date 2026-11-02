@@ -90,7 +90,7 @@ namespace MCDSaveEdit
             bool canContinue = true;
             //check default install locations
             string? paksFolderPath = _model.usableGameContentIfExists();
-            if (askForGameContentLocation || string.IsNullOrWhiteSpace(paksFolderPath))
+            if (askForGameContentLocation || string.IsNullOrWhiteSpace(paksFolderPath) || !GameContentKeys.HasConfiguredKey)
             {
                 //show dialog asking for install location
                 canContinue = showGameFilesWindow(ref paksFolderPath);
@@ -109,7 +109,7 @@ namespace MCDSaveEdit
                     _model.unloadGameContent();
 
                     var title = $"{Constants.APPLICATION_NAME} {Constants.CURRENT_VERSION} - {R.ERROR}";
-                    var message = $"{R.FAILED_TO_LOAD_GAME_CONTENT_ERROR_TITLE}\n\n{e.Message}\n\n{R.PLEASE_HAVE_LATEST_VERSION}\n\n{R.LAUNCH_WITH_LIMITED_FEATURES_QUESTION}";
+                    var message = $"{R.FAILED_TO_LOAD_GAME_CONTENT_ERROR_TITLE}\n\n{e.Message}\n\n{R.LAUNCH_WITH_LIMITED_FEATURES_QUESTION}";
                     var result = MessageBox.Show(message, title, MessageBoxButton.YesNo);
                     canContinue = result == MessageBoxResult.Yes || result == MessageBoxResult.OK;
                 }

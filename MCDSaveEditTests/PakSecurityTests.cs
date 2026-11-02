@@ -124,6 +124,64 @@ namespace MCDSaveEditTests
         }
 
         [TestMethod]
+        public void UnencryptedPakInitializesWithoutAKey()
+        {
+            using var bytes = MinimalPak(null);
+            var index = new PakIndex(new[] { bytes }, false, true, (PakFilter)null!);
+            Assert.AreEqual(0, index.InitializedPakFileCount);
+            Assert.AreEqual(1, index.UseKey((byte[])null!));
+            Assert.AreEqual(index.PakFileCount, index.InitializedPakFileCount);
+        }
+
+        [TestMethod]
+        public void MixedPakSetRemainsIncompleteUntilMatchingKeyInitializesEveryPak()
+        {
+            byte[] key = new byte[32]; key[0] = 42;
+            using var plain = MinimalPak(null);
+            using var encrypted = MinimalPak(key, nonzeroGuid: true);
+            var index = new PakIndex(new[] { plain, encrypted }, false, true, (PakFilter)null!);
+            Assert.AreEqual(1, index.UseKey(new byte[32]));
+            Assert.AreEqual(1, index.InitializedPakFileCount);
+            Assert.AreNotEqual(index.PakFileCount, index.InitializedPakFileCount);
+            Assert.AreEqual(1, index.UseKey(key));
+            Assert.AreEqual(index.PakFileCount, index.InitializedPakFileCount);
+        }
+
+        [TestMethod]
+        public void SuppliedKeyInitializesNonzeroGuidPak()
+        {
+            byte[] key = new byte[32]; key[0] = 42;
+            using var encrypted = MinimalPak(key, nonzeroGuid: true);
+            var index = new PakIndex(new[] { encrypted }, false, true, (PakFilter)null!);
+            Assert.AreEqual(0, index.UseKey(FGuid.Zero, key));
+            Assert.AreEqual(1, index.UseKey(key));
+            Assert.AreEqual(1, index.InitializedPakFileCount);
+        }
+
+        private static MemoryStream MinimalPak(byte[]? key, bool nonzeroGuid = false)
+        {
+            byte[] plaintext = new byte[16];
+            plaintext[0] = 2; plaintext[4] = (byte)'/';
+            byte[] payload = plaintext;
+            if (key != null)
+            {
+                using var aes = Aes.Create(); aes.Key = key;
+                payload = aes.EncryptEcb(plaintext, PaddingMode.None);
+            }
+            var stream = new MemoryStream();
+            using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
+            {
+                writer.Write(payload);
+                byte[] guid = new byte[16]; if (nonzeroGuid) guid[0] = 1;
+                writer.Write(guid); writer.Write((byte)(key == null ? 0 : 1));
+                writer.Write(0x5A6F12E1U); writer.Write((int)EPakVersion.ENCRYPTION_KEY_GUID);
+                writer.Write(0L); writer.Write((long)payload.Length); writer.Write(SHA1.HashData(plaintext));
+            }
+            stream.Position = 0;
+            return stream;
+        }
+
+        [TestMethod]
         [DataRow(-1)]
         [DataRow(1000001)]
         public void InvalidGenerationCountIsRejectedAtCountBeforeReadingElements(int count)

@@ -6,7 +6,8 @@ Extract the complete ZIP into a writable folder. Install the serviced Microsoft
 MCDSaveEdit.exe. Keep every DLL and runtime configuration file beside the EXE.
 
 Save editing works offline. Optional game images/localization require installed
-game PAK files and your own MCD_PAK_AES_KEY environment variable. No game key is
+game PAK files and the matching game-content AES key. Enter it in the Game Files
+dialog (session only), or configure MCD_PAK_AES_KEY and restart. No game key is
 included. Choose the limited-feature mode to edit saves without game assets.
 
 Keep backup copies of your characters. This fork stages save writes, retains

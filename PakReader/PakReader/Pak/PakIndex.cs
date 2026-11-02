@@ -13,6 +13,15 @@ namespace PakReader.Pak
         public PakFilter Filter { get; }
         readonly List<PakFileReader> PakFiles = new List<PakFileReader>();
         public int PakFileCount { get { return PakFiles.Count; } }
+        public int InitializedPakFileCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (var pak in PakFiles) if (pak.Initialized) count++;
+                return count;
+            }
+        }
 
         public PakIndex(bool cacheFiles, bool caseSensitive = true) : this(cacheFiles, caseSensitive, null) { }
         public PakIndex(bool cacheFiles, bool caseSensitive = true, IEnumerable<string> filter = null) : this(cacheFiles, caseSensitive, new PakFilter(filter, caseSensitive)) { }

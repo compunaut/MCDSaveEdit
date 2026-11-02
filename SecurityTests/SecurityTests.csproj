@@ -8,6 +8,7 @@
     <None Include="../MCDSaveEditTests/TestData/Blank.dat" Link="TestData/Blank.dat" CopyToOutputDirectory="PreserveNewest" />
     <ProjectReference Include="../DungeonTools/DungeonTools.csproj" /><ProjectReference Include="../PakReader/PakReader.csproj" />
     <Compile Include="../MCDSaveEditTests/SaveSafetyTests.cs;../MCDSaveEditTests/PakSecurityTests.cs" Link="%(Filename)%(Extension)" />
+    <Compile Include="../MCDSaveEditTests/GameContentKeysTests.cs;../MCDSaveEdit/Data/GameContentKeys.cs;../MCDSaveEdit/Data/Models/AesKey.cs" Link="Keys/%(Filename)%(Extension)" />
     <Compile Include="../MCDSaveEdit/Data/Profiles/**/*.cs;../MCDSaveEdit/Data/Mapping/*.cs;../MCDSaveEdit/Data/Enums/*.cs;../MCDSaveEdit/Core/IEnumerableExtensions.cs;../MCDSaveEdit/Logic/AtomicFileWriter.cs;../MCDSaveEdit/Logic/FileProcessHelper.cs;../MCDSaveEdit/Services/EventLogger.cs" Link="Production/%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

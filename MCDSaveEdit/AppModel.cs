@@ -146,32 +146,38 @@ namespace MCDSaveEdit
 
         private bool unlockPakIndex(PakIndex pakIndex)
         {
-            foreach (var key in GameContentKeys.Load())
+            var keys = GameContentKeys.Load();
+            mainModel.detectedGameVersion = null;
+            if (keys.Length == 0)
             {
-                var keyStr = key.key;
-                byte[] keyBytes;
-                if (keyStr.StartsWith("0x"))
+                // Unencrypted indexes need no key. Do this only when none was supplied:
+                // a supplied key may also be needed for encrypted payloads in such PAKs.
+                pakIndex.UseKey((byte[])null!);
+            }
+            else
+            {
+                foreach (var key in keys)
                 {
-                    keyBytes = keyStr.Substring(2).ToBytesKey();
-                }
-                else
-                {
-                    keyBytes = keyStr.ToBytesKey();
-                }
-
-                if (keyBytes.Length != 32)
-                {
-                    throw new InvalidOperationException($"AES Key ({keyStr.Substring(0, 3)}...) is {keyBytes.Length} bytes instead of the expected 32");
-                }
-                var count = pakIndex.UseKey(FGuid.Zero, keyBytes);
-                if (count > 0)
-                {
-                    mainModel.detectedGameVersion = key.versions;
-                    return true;
+                    string hex = key.key.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                        ? key.key.Substring(2) : key.key;
+                    byte[] keyBytes = hex.ToBytesKey();
+                    if (keyBytes.Length != 32)
+                        throw new InvalidOperationException("The game-content key must contain 32 bytes of hexadecimal data.");
+                    // User-supplied keys have no associated GUID; try every pending PAK.
+                    pakIndex.UseKey(keyBytes);
+                    if (pakIndex.InitializedPakFileCount == pakIndex.PakFileCount)
+                    {
+                        mainModel.detectedGameVersion = key.versions;
+                        return true;
+                    }
                 }
             }
-            mainModel.detectedGameVersion = null;
-            return false;
+            if (pakIndex.InitializedPakFileCount == pakIndex.PakFileCount)
+                return true;
+            int pending = pakIndex.PakFileCount - pakIndex.InitializedPakFileCount;
+            throw new InvalidOperationException(keys.Length == 0
+                ? $"{pending} game-content PAK file(s) could not be opened without a key. Supply a game-content key in Game Files settings, then retry. Save editing remains available without game images."
+                : $"{pending} game-content PAK file(s) could not be opened with the supplied key. Check that the key matches this game installation. Unsupported or damaged PAKs can also prevent loading. Save editing remains available without game images.");
         }
 
         public void unloadGameContent()

@@ -8,7 +8,7 @@
         Title="*Launch using game content*"
         WindowStyle="ToolWindow"
         ResizeMode="NoResize"
-        Height="200" Width="600">
+        Height="330" Width="650">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -23,9 +23,18 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Label x:Name="pathLabel" Content="*Path*" Grid.Column="0"/>
-                <TextBox x:Name="pathTextBox" Text="%localappdata%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks" Width="Auto" Grid.Column="1" Margin="5"/>
-                <Button x:Name="pathBrowseButton" Content="..." Width="30" Grid.Column="2" Margin="5" Click="pathBrowseButton_Click"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label x:Name="pathLabel" Content="*Path*" Grid.Column="0" Grid.Row="0"/>
+                <TextBox x:Name="pathTextBox" Text="%localappdata%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks" Width="Auto" Grid.Column="1" Grid.Row="0" Margin="5"/>
+                <Button x:Name="pathBrowseButton" Content="..." Width="30" Grid.Column="2" Grid.Row="0" Margin="5" Click="pathBrowseButton_Click"/>
+                <Label Content="AES key" Grid.Column="0" Grid.Row="1"/>
+                <PasswordBox x:Name="keyPasswordBox" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Margin="5" MaxLength="66"/>
+                <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Margin="5" TextWrapping="Wrap"
+                           Text="Encrypted game images require the AES key matching your installed game version (64 hex characters). A key entered here is used for this session only. Leave blank to keep the configured key, or choose No game content for offline editing with generic icons."/>
             </Grid>
         </GroupBox>
         <Grid Margin="5" Height="32" Grid.Row="2">

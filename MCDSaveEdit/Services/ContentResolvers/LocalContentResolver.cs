@@ -1,11 +1,9 @@
-﻿using MCDSaveEdit.Data;
+using MCDSaveEdit.Data;
 using MCDSaveEdit.Interfaces;
 using MCDSaveEdit.Save.Models.Enums;
 using MCDSaveEdit.Save.Models.Profiles;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Cache;
 using System.Windows.Media.Imaging;
 #nullable enable
 
@@ -13,9 +11,8 @@ namespace MCDSaveEdit.Services
 {
     public class LocalContentResolver: IImageResolver, ILanguageResolver
     {
-        //private const string ASSETS_URI = @"https://img.rankedboost.com/wp-content/plugins/minecraft-dungeons/assets/";
-        private const string IMAGES_URI = @"pack://application:,,/Images";
-        private readonly RequestCachePolicy REQUEST_CACHE_POLICY = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable);
+        // Reference this assembly explicitly: the host can also be a test runner.
+        private const string IMAGES_URI = "pack://application:,,,/MCDSaveEdit;component/Images/";
 
         public string? path { get { return null; } }
         public IReadOnlyCollection<string> localizationOptions { get { return new List<string>(); } }
@@ -27,17 +24,23 @@ namespace MCDSaveEdit.Services
             return null;
         }
 
-        private BitmapImage? tryBitmapImageForUri(Uri uri)
+        private BitmapImage? tryBitmapImageForResource(string fileName)
         {
             try
             {
-                //Console.WriteLine("Requesting Uri: {0}", uri);
-                var image = new BitmapImage(uri, REQUEST_CACHE_POLICY);
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = new Uri(IMAGES_URI + fileName, UriKind.Absolute);
+                image.EndInit();
+                // Resolve embedded bytes now; frozen images remain usable by the
+                // UI after background preload has finished on another thread.
+                image.Freeze();
                 return image;
             }
             catch (Exception e)
             {
-                EventLogger.logError($"Error creating bitmap for {uri}");
+                EventLogger.logError($"Error loading embedded bitmap {fileName}");
                 Console.Write(e);
                 //Debug.Assert(false);
                 return null;
@@ -54,10 +57,7 @@ namespace MCDSaveEdit.Services
         public BitmapImage? imageSourceForItem(string itemType)
         {
             var itemTypeStr = folderNameForItemType(itemType);
-            var filename = string.Format("{0}.png", itemTypeStr);
-            var path = Path.Combine(IMAGES_URI, filename);
-            var uri = new Uri(path);
-            return tryBitmapImageForUri(uri);
+            return tryBitmapImageForResource(itemTypeStr + ".png");
         }
 
         private string folderNameForItemType(string type)
@@ -130,10 +130,7 @@ namespace MCDSaveEdit.Services
             {
                 return null;
             }
-            var filename = "Enchantments.png";
-            var path = Path.Combine(IMAGES_URI, filename);
-            var uri = new Uri(path);
-            return tryBitmapImageForUri(uri);
+            return tryBitmapImageForResource("Enchantments.png");
         }
 
         #endregion

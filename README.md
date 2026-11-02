@@ -100,7 +100,7 @@ dotnet test MCDSaveEditTests/MCDSaveEditTests.csproj --no-build -c Release --fil
 dotnet run --project MCDSaveEdit -- SKIP_GAME_CONTENT
 ```
 
-Save editing needs no analytics credentials or network connection. Optional installed-game image/localization access needs your locally supplied game-content AES key in the `MCD_PAK_AES_KEY` environment variable (64 hexadecimal characters, optionally prefixed with `0x`). Never commit that value. Select the PAK directory in the folder picker; no private `Secrets.cs` or machine-specific Windows SDK path is required.
+Save editing needs no analytics credentials or network connection. Encrypted installed-game image/localization access needs the game-content AES key matching your installation. Enter it in the Game Files dialog for the current session, or configure `MCD_PAK_AES_KEY` (64 hexadecimal characters, optionally prefixed with `0x`) and restart the editor. Dialog keys stay in memory and are not persisted. No key is needed for unencrypted archives or offline save editing; limited mode uses embedded generic category icons. Never commit key values. Select the PAK directory in the folder picker; no private `Secrets.cs` or machine-specific Windows SDK path is required.
 
 Cross-platform production-source security tests:
 
