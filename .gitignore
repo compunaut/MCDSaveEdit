@@ -264,3 +264,9 @@ MCDSaveEdit/Data/Secrets.cs
 # Audit reference checkout; maintained fork is at the repository root.
 /upstream/
 /artifacts/
+
+# Release source documentation (not compiled Release output).
+!/release/
+!/release/**
+/release-verification/
+/dist/

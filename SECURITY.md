@@ -1,7 +1,9 @@
 # Personal fork security and validation
 
-This repository is a personal fork. CI builds and retains short-lived review
-artifacts only; it does not publish releases, push commits, or open upstream PRs.
+This repository is a personal fork. Validation CI builds and retains short-lived review artifacts. The dedicated
+[release workflow](release/WORKFLOW.md) publishes only to this fork, with narrowly
+scoped signing and publishing permissions and mandatory immutable releases.
+No workflow pushes commits or opens upstream PRs.
 Report suspected vulnerabilities privately to the personal fork's maintainer.
 Do not attach private save files, account information, or game encryption keys
 to public issues or CI logs.

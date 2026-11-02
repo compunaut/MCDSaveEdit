@@ -4,6 +4,7 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  workflow_call:
 
 # No publishing, PR writes, OIDC credentials, or access to repository secrets.
 permissions:

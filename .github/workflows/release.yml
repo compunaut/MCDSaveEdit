@@ -1,0 +1,138 @@
+name: Release v1.0.0
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v1.0.0']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-v1.0.0
+  cancel-in-progress: false
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  NUGET_XMLDOC_MODE: skip
+
+jobs:
+  policy:
+    name: Require trusted source and immutable releases
+    if: github.repository == 'compunaut/MCDSaveEdit' && (github.ref == 'refs/heads/master' || github.ref == 'refs/tags/v1.0.0')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pin the release to a versioned commit on master
+        run: |
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/master
+          python3 -c 'from pathlib import Path; assert "CURRENT_VERSION_NUMBER = \"1.0.0.0\"" in Path("MCDSaveEdit/Data/Constants/Constants.cs").read_text(), "Release version mismatch"'
+          if git rev-parse --verify 'refs/tags/v1.0.0^{commit}' >/dev/null 2>&1; then
+            test "$(git rev-parse 'refs/tags/v1.0.0^{commit}')" = "$GITHUB_SHA"
+          fi
+      - name: Refuse publication without verified repository immutability
+        env:
+          # Administration:read ONLY, scoped to this fork. Never passed to builds.
+          # Ordinary GITHUB_TOKEN cannot normally read the immutable-policy endpoint.
+          GH_TOKEN: ${{ secrets.RELEASE_POLICY_READ_TOKEN || github.token }}
+        run: python3 scripts/release-policy.py
+
+  validation:
+    name: Release validation
+    needs: policy
+    uses: ./.github/workflows/validate.yml
+    permissions:
+      contents: read
+
+  package:
+    name: Package and attest (${{ matrix.rid }})
+    needs: [policy, validation]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix:
+        rid: [win-x64, win-x86]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: validated-${{ matrix.rid }}
+          path: validated
+          digest-mismatch: error
+      - name: Package the exact validated Windows output with licenses
+        env:
+          RELEASE_RID: ${{ matrix.rid }}
+        run: python3 scripts/package-release.py --validated validated --rid "$RELEASE_RID" --output dist
+      - name: Include the complete corresponding source at the release commit
+        if: matrix.rid == 'win-x64'
+        run: git archive --format=zip --prefix=MCDSaveEdit-v1.0.0-source/ --output=dist/MCDSaveEdit-v1.0.0-source.zip "$GITHUB_SHA"
+      - name: Attest finalized release archives
+        id: provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: dist/*.zip
+          create-storage-record: false
+      - name: Retain the downloadable Sigstore bundle
+        env:
+          BUNDLE_PATH: ${{ steps.provenance.outputs.bundle-path }}
+          RELEASE_RID: ${{ matrix.rid }}
+        run: cp "$BUNDLE_PATH" "dist/MCDSaveEdit-v1.0.0-$RELEASE_RID.sigstore.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-assets-${{ matrix.rid }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish and verify immutable v1.0.0 release
+    needs: [policy, validation, package]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      attestations: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-assets-win-x64
+          path: dist
+          digest-mismatch: error
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-assets-win-x86
+          path: dist
+          digest-mismatch: error
+      - name: Recheck immutable policy immediately before publication
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_POLICY_READ_TOKEN || github.token }}
+        run: python3 scripts/release-policy.py
+      - name: Verify provenance, attach all assets to a draft, then publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/publish-release.py
+      - name: Retain release verification evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: v1.0.0-release-verification
+          path: release-verification
+          if-no-files-found: warn
+          retention-days: 30
