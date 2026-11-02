@@ -6,7 +6,7 @@ namespace MCDSaveEdit.Data
 {
     public static partial class Constants
     {
-        public const string CURRENT_VERSION_NUMBER = "1.0.0.0";
+        public const string CURRENT_VERSION_NUMBER = "1.0.1.0";
 
 
 

@@ -8,11 +8,11 @@ import subprocess
 import time
 
 REPOSITORY = 'compunaut/MCDSaveEdit'
-TAG = 'v1.0.0'
+TAG = 'v1.0.1'
 EXPECTED = {
-    'MCDSaveEdit-v1.0.0-win-x64.zip', 'MCDSaveEdit-v1.0.0-win-x86.zip',
-    'MCDSaveEdit-v1.0.0-source.zip',
-    'MCDSaveEdit-v1.0.0-win-x64.sigstore.json', 'MCDSaveEdit-v1.0.0-win-x86.sigstore.json',
+    'MCDSaveEdit-v1.0.1-win-x64.zip', 'MCDSaveEdit-v1.0.1-win-x86.zip',
+    'MCDSaveEdit-v1.0.1-source.zip',
+    'MCDSaveEdit-v1.0.1-win-x64.sigstore.json', 'MCDSaveEdit-v1.0.1-win-x86.sigstore.json',
 }
 
 
@@ -55,12 +55,12 @@ def publish(directory=Path('dist')):
     pages = json.loads(run('api', 'repos/' + REPOSITORY + '/releases?per_page=100',
                            '--paginate', '--slurp', capture=True))
     if any(release.get('tag_name') == TAG for page in pages for release in page):
-        raise ValueError('Existing v1.0.0 release or draft must be resolved deliberately.')
+        raise ValueError('Existing v1.0.1 release or draft must be resolved deliberately.')
     # No clobber or update path: any existing release/draft aborts instead.
     created = json.loads(run('api', '--method', 'POST', 'repos/' + REPOSITORY + '/releases',
         '--raw-field', 'tag_name=' + TAG, '--raw-field', 'target_commitish=' + commit,
-        '--raw-field', 'name=MCDSaveEdit v1.0.0', '--field', 'draft=true',
-        '--raw-field', 'body=' + Path('release/v1.0.0.md').read_text(), capture=True))
+        '--raw-field', 'name=MCDSaveEdit v1.0.1', '--field', 'draft=true',
+        '--raw-field', 'body=' + Path('release/v1.0.1.md').read_text(), capture=True))
     release_id = created['id']
     run('release', 'upload', TAG, '--repo', REPOSITORY, *map(str, assets))
     # Confirm the complete draft before the irreversible immutable publication.
@@ -94,7 +94,7 @@ def publish(directory=Path('dist')):
         verified = run('release', 'verify-asset', TAG, str(path), '--repo', REPOSITORY,
                        '--format', 'json', capture=True, retry=True)
         (evidence / (path.name + '.release-verification.json')).write_text(verified)
-    print('Published immutable v1.0.0 with verified build and release attestations.')
+    print('Published immutable v1.0.1 with verified build and release attestations.')
 
 
 if __name__ == '__main__':

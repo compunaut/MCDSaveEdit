@@ -57,7 +57,7 @@ def package(validated, source, output, rid):
     }.items():
         files[name] = (source / path).read_bytes()
     output.mkdir(parents=True, exist_ok=True)
-    archive = output / ('MCDSaveEdit-v1.0.0-' + rid + '.zip')
+    archive = output / ('MCDSaveEdit-v1.0.1-' + rid + '.zip')
     zip_files(archive, files)
     print(archive)
     return archive

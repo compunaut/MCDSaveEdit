@@ -135,7 +135,7 @@ class ReleasePublisherTests(unittest.TestCase):
         for name in publisher.EXPECTED:
             (self.dist / name).write_bytes(('verified release asset ' + name).encode())
         (self.root / 'release').mkdir()
-        (self.root / 'release/v1.0.0.md').write_text('Reviewed release notes.\n')
+        (self.root / 'release/v1.0.1.md').write_text('Reviewed release notes.\n')
         self.commit = 'a' * 40
         self.prefix = 'repos/' + publisher.REPOSITORY
         self.events = []
@@ -255,7 +255,7 @@ class ReleasePublisherTests(unittest.TestCase):
     def test_existing_draft_on_later_page_prevents_creation_or_upload(self):
         self.existing_pages = [[{'tag_name': 'v0.9.0', 'draft': False}],
                                [{'tag_name': publisher.TAG, 'draft': True}]]
-        with self.assertRaisesRegex(ValueError, 'Existing v1.0.0 release or draft'):
+        with self.assertRaisesRegex(ValueError, 'Existing v1.0.1 release or draft'):
             self.publish()
         self.assertFalse(any(event[:3] == ('api', '--method', 'POST') for event in self.events))
         self.assertFalse(any(event[:2] == ('release', 'upload') for event in self.events))
