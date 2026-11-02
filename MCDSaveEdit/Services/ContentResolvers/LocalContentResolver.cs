@@ -11,6 +11,13 @@ namespace MCDSaveEdit.Services
 {
     public class LocalContentResolver: IImageResolver, ILanguageResolver
     {
+        static LocalContentResolver()
+        {
+            // WPF registers its application pack handler in Application's type
+            // initializer. A library/test host may not have created an app yet.
+            _ = System.Windows.Application.Current;
+        }
+
         // Reference this assembly explicitly: the host can also be a test runner.
         private const string IMAGES_URI = "pack://application:,,,/MCDSaveEdit;component/Images/";
 
