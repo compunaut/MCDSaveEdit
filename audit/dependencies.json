@@ -1,0 +1,742 @@
+{
+  "checked_at": "2026-11-02T00:11:49.742242+00:00",
+  "scope": "Declared dependencies only, not a restored transitive graph. Includes nested submodule projects not used by parent solution.",
+  "feeds": [
+    {
+      "@name": "base",
+      "@id": "https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json",
+      "@updated": "2026-10-28T05:41:06.8059565Z",
+      "comment": "The base data for vulnerability update periodically"
+    },
+    {
+      "@name": "update",
+      "@id": "https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.01.23.41.49/vulnerability.update.json",
+      "@updated": "2026-11-01T23:41:49.8608597Z",
+      "comment": "The patch data for the vulnerability. Contains all the vulnerabilities since base was last updated."
+    }
+  ],
+  "dependencies": [
+    {
+      "package": "Microsoft.Bcl.AsyncInterfaces",
+      "version": "6.0.0",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "10.0.14",
+      "advisories": []
+    },
+    {
+      "package": "System.Buffers",
+      "version": "4.5.1",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "4.6.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Memory",
+      "version": "4.5.5",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "4.6.3",
+      "advisories": []
+    },
+    {
+      "package": "System.Numerics.Vectors",
+      "version": "4.5.0",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "4.6.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.CompilerServices.Unsafe",
+      "version": "6.0.0",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "6.1.2",
+      "advisories": []
+    },
+    {
+      "package": "System.Text.Encodings.Web",
+      "version": "6.0.0",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "10.0.14",
+      "advisories": []
+    },
+    {
+      "package": "System.Text.Json",
+      "version": "6.0.6",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "10.0.14",
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-8g4q-xg66-9fp4",
+          "severity": 2,
+          "versions": "[6.0.0, 6.0.9]"
+        }
+      ]
+    },
+    {
+      "package": "System.Threading.Tasks.Extensions",
+      "version": "4.5.4",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "4.6.3",
+      "advisories": []
+    },
+    {
+      "package": "System.ValueTuple",
+      "version": "4.5.0",
+      "path": "upstream/DungeonTools/packages.config",
+      "latest_stable": "4.6.2",
+      "advisories": []
+    },
+    {
+      "package": "CommandLineParser",
+      "version": "2.8.0",
+      "path": "upstream/DungeonTools/DungeonTools/src/DungeonTools.Cli/DungeonTools.Cli.csproj",
+      "latest_stable": "2.9.1",
+      "advisories": []
+    },
+    {
+      "package": "DotNetZip",
+      "version": "1.16.0",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "1.16.0",
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-xhg6-9j5j-w4vf",
+          "severity": 2,
+          "versions": "[1.10.1, 1.16.0]"
+        }
+      ]
+    },
+    {
+      "package": "IndexRange",
+      "version": "1.0.2",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "1.1.1",
+      "advisories": []
+    },
+    {
+      "package": "Microsoft.Bcl.AsyncInterfaces",
+      "version": "6.0.0",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "10.0.14",
+      "advisories": []
+    },
+    {
+      "package": "Newtonsoft.Json",
+      "version": "13.0.1",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "13.0.4",
+      "advisories": []
+    },
+    {
+      "package": "SkiaSharp",
+      "version": "2.88.3",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "4.154.0",
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-j7hp-h8jx-5ppr",
+          "severity": 2,
+          "versions": "[2.0.0, 2.88.6)"
+        }
+      ]
+    },
+    {
+      "package": "SkiaSharp.NativeAssets.macOS",
+      "version": "2.88.3",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "4.154.0",
+      "advisories": []
+    },
+    {
+      "package": "SkiaSharp.NativeAssets.Win32",
+      "version": "2.88.3",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "4.154.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Buffers",
+      "version": "4.5.1",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "4.6.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Memory",
+      "version": "4.5.5",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "4.6.3",
+      "advisories": []
+    },
+    {
+      "package": "System.Numerics.Vectors",
+      "version": "4.5.0",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "4.6.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.CompilerServices.Unsafe",
+      "version": "6.0.0",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "6.1.2",
+      "advisories": []
+    },
+    {
+      "package": "System.Threading.Tasks.Extensions",
+      "version": "4.5.4",
+      "path": "upstream/PakReader/packages.config",
+      "latest_stable": "4.6.3",
+      "advisories": []
+    },
+    {
+      "package": "Newtonsoft.Json",
+      "version": "12.0.3",
+      "path": "upstream/PakReader/PakReader/PakReader.csproj",
+      "latest_stable": "13.0.4",
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
+          "severity": 2,
+          "versions": "(, 13.0.1)"
+        }
+      ]
+    },
+    {
+      "package": "SkiaSharp",
+      "version": "1.68.1.1",
+      "path": "upstream/PakReader/PakReader/PakReader.csproj",
+      "latest_stable": "4.154.0",
+      "advisories": []
+    },
+    {
+      "package": "Costura.Fody",
+      "version": "5.7.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "6.2.0",
+      "advisories": []
+    },
+    {
+      "package": "Fody",
+      "version": "6.6.4",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "6.9.3",
+      "advisories": []
+    },
+    {
+      "package": "GameAnalytics.Mono.SDK",
+      "version": "3.3.5",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "3.4.0",
+      "advisories": []
+    },
+    {
+      "package": "Microsoft.Bcl.AsyncInterfaces",
+      "version": "6.0.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "10.0.14",
+      "advisories": []
+    },
+    {
+      "package": "Microsoft.NETCore.Platforms",
+      "version": "6.0.6",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "7.0.4",
+      "advisories": []
+    },
+    {
+      "package": "Microsoft.Win32.Primitives",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "NETStandard.Library",
+      "version": "2.0.3",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "2.0.3",
+      "advisories": []
+    },
+    {
+      "package": "Newtonsoft.Json",
+      "version": "13.0.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "13.0.4",
+      "advisories": []
+    },
+    {
+      "package": "NLog",
+      "version": "5.0.4",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "6.2.2",
+      "advisories": []
+    },
+    {
+      "package": "SkiaSharp",
+      "version": "2.88.3",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.154.0",
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-j7hp-h8jx-5ppr",
+          "severity": 2,
+          "versions": "[2.0.0, 2.88.6)"
+        }
+      ]
+    },
+    {
+      "package": "SkiaSharp.NativeAssets.macOS",
+      "version": "2.88.3",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.154.0",
+      "advisories": []
+    },
+    {
+      "package": "SkiaSharp.NativeAssets.Win32",
+      "version": "2.88.3",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.154.0",
+      "advisories": []
+    },
+    {
+      "package": "System.AppContext",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Buffers",
+      "version": "4.5.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.6.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Collections",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Collections.Concurrent",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Console",
+      "version": "4.3.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Diagnostics.Debug",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Diagnostics.DiagnosticSource",
+      "version": "6.0.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "10.0.14",
+      "advisories": []
+    },
+    {
+      "package": "System.Diagnostics.Tools",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Diagnostics.Tracing",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Globalization",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Globalization.Calendars",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.IO",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.IO.Compression",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.IO.Compression.ZipFile",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.IO.FileSystem",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.IO.FileSystem.Primitives",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Linq",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Linq.Expressions",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Memory",
+      "version": "4.5.5",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.6.3",
+      "advisories": []
+    },
+    {
+      "package": "System.Net.Http",
+      "version": "4.3.4",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.4",
+      "advisories": []
+    },
+    {
+      "package": "System.Net.Primitives",
+      "version": "4.3.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Net.Sockets",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Numerics.Vectors",
+      "version": "4.5.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.6.1",
+      "advisories": []
+    },
+    {
+      "package": "System.ObjectModel",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Reactive",
+      "version": "5.0.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "7.0.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Reflection",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Reflection.Extensions",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Reflection.Primitives",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Resources.ResourceManager",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime",
+      "version": "4.3.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.CompilerServices.Unsafe",
+      "version": "6.0.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "6.1.2",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.Extensions",
+      "version": "4.3.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.Handles",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.InteropServices",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.InteropServices.RuntimeInformation",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.InteropServices.WindowsRuntime",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.Numerics",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Security.Cryptography.Algorithms",
+      "version": "4.3.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Security.Cryptography.Encoding",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Security.Cryptography.Primitives",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Security.Cryptography.X509Certificates",
+      "version": "4.3.2",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.2",
+      "advisories": []
+    },
+    {
+      "package": "System.Text.Encoding",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Text.Encoding.Extensions",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Text.Encodings.Web",
+      "version": "6.0.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "10.0.14",
+      "advisories": []
+    },
+    {
+      "package": "System.Text.Json",
+      "version": "6.0.6",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "10.0.14",
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-8g4q-xg66-9fp4",
+          "severity": 2,
+          "versions": "[6.0.0, 6.0.9]"
+        }
+      ]
+    },
+    {
+      "package": "System.Text.RegularExpressions",
+      "version": "4.3.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Threading",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Threading.Tasks",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Threading.Tasks.Extensions",
+      "version": "4.5.4",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.6.3",
+      "advisories": []
+    },
+    {
+      "package": "System.Threading.Timer",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.ValueTuple",
+      "version": "4.5.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.6.2",
+      "advisories": []
+    },
+    {
+      "package": "System.Xml.ReaderWriter",
+      "version": "4.3.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.1",
+      "advisories": []
+    },
+    {
+      "package": "System.Xml.XDocument",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "WindowsAPICodePack-Core",
+      "version": "1.1.2",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "1.1.2",
+      "advisories": []
+    },
+    {
+      "package": "WindowsAPICodePack-Shell",
+      "version": "1.1.1",
+      "path": "upstream/MCDSaveEdit/packages.config",
+      "latest_stable": "1.1.1",
+      "advisories": []
+    },
+    {
+      "package": "MSTest.TestAdapter",
+      "version": "2.2.10",
+      "path": "upstream/MCDSaveEditTests/packages.config",
+      "latest_stable": "4.5.2",
+      "advisories": []
+    },
+    {
+      "package": "MSTest.TestFramework",
+      "version": "2.2.10",
+      "path": "upstream/MCDSaveEditTests/packages.config",
+      "latest_stable": "4.5.2",
+      "advisories": []
+    },
+    {
+      "package": "System.Reactive",
+      "version": "5.0.0",
+      "path": "upstream/MCDSaveEditTests/packages.config",
+      "latest_stable": "7.0.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.CompilerServices.Unsafe",
+      "version": "6.0.0",
+      "path": "upstream/MCDSaveEditTests/packages.config",
+      "latest_stable": "6.1.2",
+      "advisories": []
+    },
+    {
+      "package": "System.Runtime.InteropServices.WindowsRuntime",
+      "version": "4.3.0",
+      "path": "upstream/MCDSaveEditTests/packages.config",
+      "latest_stable": "4.3.0",
+      "advisories": []
+    },
+    {
+      "package": "System.Threading.Tasks.Extensions",
+      "version": "4.5.4",
+      "path": "upstream/MCDSaveEditTests/packages.config",
+      "latest_stable": "4.6.3",
+      "advisories": []
+    },
+    {
+      "package": "System.ValueTuple",
+      "version": "4.5.0",
+      "path": "upstream/MCDSaveEditTests/packages.config",
+      "latest_stable": "4.6.2",
+      "advisories": []
+    }
+  ]
+}

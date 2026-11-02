@@ -1,6 +1,6 @@
-﻿using MCDSaveEdit.Data;
+using MCDSaveEdit.Data;
 using MCDSaveEdit.Services;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -133,15 +133,12 @@ namespace MCDSaveEdit.UI
         private void pathBrowseButton_Click(object sender, RoutedEventArgs e)
         {
             EventLogger.logEvent("pathBrowseButton_Click");
-            var dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = true;
-            dialog.EnsurePathExists = true;
-            dialog.ShowHiddenItems = true;
+            var dialog = new OpenFolderDialog();
             var appDataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             dialog.InitialDirectory = appDataFolderPath;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            if (dialog.ShowDialog(this) == true)
             {
-                selectedPath = dialog.FileName;
+                selectedPath = dialog.FolderName;
             }            
         }
     }

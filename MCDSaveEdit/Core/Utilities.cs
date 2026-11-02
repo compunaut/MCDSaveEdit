@@ -1,10 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace MCDSaveEdit
 {
@@ -22,23 +20,5 @@ namespace MCDSaveEdit
             return dictA.Concat(dictB.Where(kvp => !dictA.ContainsKey(kvp.Key))).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
-        public static async Task<string> wgetAsync(string requestUriString)
-        {
-            try
-            {
-                var request = WebRequest.Create(requestUriString);
-                using var response = await request.GetResponseAsync();
-                using var dataStream = response.GetResponseStream();
-                using var reader = new StreamReader(dataStream);
-                string responseFromServer = reader.ReadToEnd();
-                response.Close();
-                return responseFromServer;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            return "{}";
-        }
     }
 }

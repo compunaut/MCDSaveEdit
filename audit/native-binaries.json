@@ -1,0 +1,40 @@
+[
+  {
+    "path": "upstream/MCDSaveEdit/Costura32/sqlite3.dll",
+    "sha256": "0d871df3557638889954068330ee23045f630d5bffca6aad233eb7002ab2d9a3",
+    "version_hints": [],
+    "resource_version_hints": [
+      "3.12.0",
+      "3.12.0",
+      "2016-03-29 10:14:15 e9bb4cf40f4971974a74468ef922bdee481c988b"
+    ]
+  },
+  {
+    "path": "upstream/MCDSaveEdit/Costura32/libSkiaSharp.dll",
+    "sha256": "4c8f7fa7c4181ee9e78f3a19966fa7a3f9731daad49ff366eefb321a2d5a9992",
+    "version_hints": [
+      "D:\\a\\1\\s\\externals\\skia\\out\\windows\\Win32\\libSkiaSharp.pdb",
+      "libSkiaSharp.dll"
+    ],
+    "resource_version_hints": []
+  },
+  {
+    "path": "upstream/MCDSaveEdit/Costura64/sqlite3.dll",
+    "sha256": "fd7b3dc1f49cf4e933ed91ae64a4129b6a5671d4ed5f4ed406188173f0d40e11",
+    "version_hints": [],
+    "resource_version_hints": [
+      "3.12.0",
+      "3.12.0",
+      "2016-03-29 10:14:15 e9bb4cf40f4971974a74468ef922bdee481c988b"
+    ]
+  },
+  {
+    "path": "upstream/MCDSaveEdit/Costura64/libSkiaSharp.dll",
+    "sha256": "62dc810c091965e8981efbe071d602108c08f60b57737b0fe5fe7066b84eaaf4",
+    "version_hints": [
+      "D:\\a\\1\\s\\externals\\skia\\out\\windows\\x64\\libSkiaSharp.pdb",
+      "libSkiaSharp.dll"
+    ],
+    "resource_version_hints": []
+  }
+]

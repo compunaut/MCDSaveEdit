@@ -1,4 +1,4 @@
-﻿using DungeonTools.Save.File;
+using DungeonTools.Save.File;
 using MCDSaveEdit.Data;
 using MCDSaveEdit.Logic;
 using MCDSaveEdit.Save.Models.Profiles;
@@ -13,6 +13,11 @@ namespace MCDSaveEdit.ViewModels
 {
     public class MainViewModel
     {
+        private readonly System.Threading.SemaphoreSlim saveGate = new System.Threading.SemaphoreSlim(1, 1);
+        private string? openedPath;
+        private FileSnapshot? openedSnapshot;
+        private FileSnapshot? saveSnapshot;
+
         public ProfileViewModel profileModel = new ProfileViewModel();
 
         public Action<string>? showError;
@@ -103,16 +108,21 @@ namespace MCDSaveEdit.ViewModels
 
         public async Task handleFileOpenAsync(string filePath)
         {
+            var beforeOpen = FileSnapshot.Capture(filePath);
             var profile = await handleGenericFileOpenAsync(filePath);
+            beforeOpen.AssertUnchanged(filePath);
             if(profile != null)
             {
                 addRecentFile(filePath);
                 setProfile(filePath, profile!);
+                openedSnapshot = beforeOpen;
             }
         }
 
         public void setProfile(string filePath, ProfileSaveFile profile)
         {
+            openedPath = Path.GetFullPath(filePath);
+            openedSnapshot = FileSnapshot.Capture(filePath);
             profileModel.filePath = filePath;
             profileModel.profile.setValue = profile;
         }
@@ -130,16 +140,18 @@ namespace MCDSaveEdit.ViewModels
             }
         }
 
-        private Task<ProfileSaveFile?> handleJsonFileOpen(string filePath)
+        private async Task<ProfileSaveFile?> handleJsonFileOpen(string filePath)
         {
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            return tryParseFileStreamAsync(stream);
+            return await tryParseFileStreamAsync(stream);
         }
 
         private async Task<ProfileSaveFile?> handleDatFileOpen(string filePath)
         {
             var file = new FileInfo(filePath);
             using FileStream inputStream = file.OpenRead();
+            if (inputStream.Length > ProfileParser.MaximumProfileBytes + 16)
+                throw new InvalidDataException("Save exceeds the supported size limit.");
             bool encrypted = SaveFileHandler.IsFileEncrypted(inputStream);
             if (!encrypted)
             {
@@ -185,18 +197,28 @@ namespace MCDSaveEdit.ViewModels
         public async Task handleFileSaveAsync(string? filePath, ProfileSaveFile profile)
         {
             if (filePath == null) { return; }
-            profile.TotalGearPower = profile.computeCharacterPower();
-            Console.WriteLine("Writing file: {0}", filePath!);
-            if (Path.GetExtension(filePath!) == Constants.DECRYPTED_FILE_EXTENSION)
+            await saveGate.WaitAsync();
+            try
             {
-                await handleJsonFileSave(filePath!, profile);
+                saveSnapshot = string.Equals(openedPath, Path.GetFullPath(filePath), StringComparison.OrdinalIgnoreCase)
+                    ? openedSnapshot : FileSnapshot.Capture(filePath);
+                saveSnapshot?.AssertUnchanged(filePath);
+                profile.TotalGearPower = profile.computeCharacterPower();
+                Console.WriteLine("Writing file: {0}", filePath!);
+                if (Path.GetExtension(filePath!) == Constants.DECRYPTED_FILE_EXTENSION)
+                {
+                    await handleJsonFileSave(filePath!, profile);
+                }
+                else
+                {
+                    await handleDatFileSave(filePath!, profile);
+                }
+                addRecentFile(filePath);
+                profileModel.filePath = filePath;
+                openedPath = Path.GetFullPath(filePath);
+                openedSnapshot = saveSnapshot;
             }
-            else
-            {
-                await handleDatFileSave(filePath!, profile);
-            }
-            addRecentFile(filePath);
-            profileModel.filePath = filePath;
+            finally { saveGate.Release(); }
         }
 
         private async Task handleJsonFileSave(string filePath, ProfileSaveFile profile)
@@ -213,21 +235,14 @@ namespace MCDSaveEdit.ViewModels
             if (processed == null)
             {
                 EventLogger.logError($"Failed to encrypt the json data.");
-                showError?.Invoke(R.FAILED_TO_ENCRYPT_ERROR_MESSAGE);
-                return;
+                throw new IOException(R.FAILED_TO_ENCRYPT_ERROR_MESSAGE);
             }
             await writeStreamToFileAsync(processed, filePath);
         }
 
         private async Task writeStreamToFileAsync(Stream stream, string filePath)
         {
-            if (!File.Exists(filePath))
-            {
-                File.WriteAllText(filePath, string.Empty);
-            }
-            using var filestream = new FileStream(filePath, FileMode.Truncate, FileAccess.Write);
-            stream.Seek(0, SeekOrigin.Begin);
-            await stream.CopyToAsync(filestream);
+            saveSnapshot = await AtomicFileWriter.WriteAsync(stream, filePath, overwrite: true, expected: saveSnapshot);
         }
 
         #endregion

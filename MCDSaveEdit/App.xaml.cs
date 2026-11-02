@@ -1,4 +1,4 @@
-﻿using MCDSaveEdit.Data;
+using MCDSaveEdit.Data;
 using MCDSaveEdit.Save.Models.Profiles;
 using MCDSaveEdit.Services;
 using MCDSaveEdit.UI;
@@ -19,7 +19,8 @@ namespace MCDSaveEdit
     /// </summary>
     public partial class App : Application, IDisposable
     {
-        private readonly AppModel _model = new AppModel();
+        private readonly Lazy<AppModel> appModel = new Lazy<AppModel>(() => new AppModel());
+        private AppModel _model => appModel.Value;
         private readonly MultiTextWriter _outputWriter = new MultiTextWriter();
 
         private ControlWriter? _controlWriter = null;
@@ -29,6 +30,11 @@ namespace MCDSaveEdit
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            if (e.Args.Length == 2 && e.Args[0] == "--verify-native")
+            {
+                Shutdown(NativeVerification.Run(e.Args[1]));
+                return;
+            }
             _outputWriter.addWriter(Console.Out);
             Console.SetOut(_outputWriter);
 
@@ -51,7 +57,12 @@ namespace MCDSaveEdit
             {
                 string extension = Path.GetExtension(fileName!);
                 EventLogger.logEvent("handleFileOpenAsync", new Dictionary<string, object>() { { "extension", extension } });
-                await _model.mainModel.handleFileOpenAsync(fileName!);
+                try { await _model.mainModel.handleFileOpenAsync(fileName!); }
+                catch (Exception error)
+                {
+                    EventLogger.logError(error.ToString());
+                    MessageBox.Show("Could not open the save: " + error.Message, R.ERROR);
+                }
             }
 
             bool skipGameContent = args.Contains("SKIP_GAME_CONTENT");

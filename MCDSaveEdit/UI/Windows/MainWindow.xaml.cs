@@ -291,7 +291,7 @@ namespace MCDSaveEdit.UI
         private void updateMenuItem_Click(object sender, RoutedEventArgs e)
         {
             EventLogger.logEvent("updateMenuItem_Click");
-            Process.Start(Config.instance.newVersionDownloadURL());
+            updateMenuItem.Visibility = Visibility.Collapsed;
         }
 
 #endregion
@@ -336,26 +336,39 @@ namespace MCDSaveEdit.UI
                 return;
             }
             showBusyIndicator();
-            string extension = Path.GetExtension(fileName!);
-            EventLogger.logEvent("handleFileOpenAsync", new Dictionary<string, object>() { { "extension", extension } });
-            await _model.handleFileOpenAsync(fileName!);
-            updateTitleUI();
-            refreshRecentFilesList();
-            closeBusyIndicator();
+            try
+            {
+                await _model.handleFileOpenAsync(fileName!);
+                updateTitleUI();
+                refreshRecentFilesList();
+            }
+            catch (Exception error)
+            {
+                EventLogger.logError(error.ToString());
+                showError("Could not open the save: " + error.Message);
+            }
+            finally { closeBusyIndicator(); }
         }
 
         private async void handleFileSaveAsync(string? fileName)
         {
             if (_model.profileModel.profile.value == null || string.IsNullOrWhiteSpace(fileName)) { return; }
             showBusyIndicator();
-            string extension = Path.GetExtension(fileName!);
-            EventLogger.logEvent("handleFileSaveAsync", new Dictionary<string, object>() { { "extension", extension } });
-            await _model.handleFileSaveAsync(fileName!, _model.profileModel.profile.value!);
-            updateTitleUI();
-            refreshRecentFilesList();
-            closeBusyIndicator();
+            try
+            {
+                await _model.handleFileSaveAsync(fileName!, _model.profileModel.profile.value!);
+                updateTitleUI();
+                refreshRecentFilesList();
+            }
+            catch (Exception error)
+            {
+                EventLogger.logError(error.ToString());
+                showError("Could not finish saving. Check the destination and backups before retrying.\n\n" + error.Message);
+            }
+            finally { closeBusyIndicator(); }
         }
         
+
         private void showBusyIndicator()
         {
             closeBusyIndicator();

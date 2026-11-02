@@ -1,4 +1,4 @@
-﻿using DungeonTools.Save.File;
+using DungeonTools.Save.File;
 using MCDSaveEdit.Services;
 using System;
 using System.IO;
@@ -9,6 +9,8 @@ namespace MCDSaveEdit.Logic
 {
     public static class FileProcessHelper
     {
+        private const long ProfileSizeLimit = 64 * 1024 * 1024 + 16;
+
         public static async ValueTask ProcessFile(FileInfo file, bool overwrite)
         {
             if (!file.Exists)
@@ -18,9 +20,10 @@ namespace MCDSaveEdit.Logic
             }
 
             using FileStream inputStream = file.OpenRead();
+            if (inputStream.Length > ProfileSizeLimit) throw new InvalidDataException("Save exceeds the supported size limit.");
             bool encrypted = SaveFileHandler.IsFileEncrypted(inputStream);
 
-            Stream? processed = encrypted ? await Decrypt(inputStream) : await Encrypt(inputStream);
+            using Stream? processed = encrypted ? await Decrypt(inputStream) : await Encrypt(inputStream);
             if (processed == null)
             {
                 EventLogger.logError($"Content of file \"{file.Name}\" could not be converted to a supported format.");
@@ -29,8 +32,7 @@ namespace MCDSaveEdit.Logic
 
             processed.Seek(0, SeekOrigin.Begin);
             string outputFile = GetOutputFilePath(file, encrypted, overwrite);
-            using FileStream outputStream = File.Open(outputFile, FileMode.Create, FileAccess.Write);
-            await processed.CopyToAsync(outputStream);
+            await AtomicFileWriter.WriteAsync(processed, outputFile, overwrite);
         }
 
         public static async ValueTask<Stream?> Decrypt(Stream data)
@@ -58,7 +60,7 @@ namespace MCDSaveEdit.Logic
             };
 
             string idealFileName = $"{Path.GetFileNameWithoutExtension(fileInfo.Name)}{targetExtension}";
-            if (string.Equals(fileInfo.Name, idealFileName, StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(fileInfo.Name, idealFileName, StringComparison.OrdinalIgnoreCase))
             {
                 idealFileName = $"{Path.GetFileNameWithoutExtension(idealFileName)}_{(isEncrypted ? "Decrypted" : "Encrypted")}{targetExtension}";
             }
@@ -72,7 +74,7 @@ namespace MCDSaveEdit.Logic
             int fileNumber = 1;
             while (File.Exists(outFileName))
             {
-                outFileName = $"{outFileName.Substring(outFileName.Length - targetExtension.Length)}_{fileNumber++}{targetExtension}";
+                outFileName = Path.Combine(fileInfo.DirectoryName!, $"{Path.GetFileNameWithoutExtension(idealFileName)}_{fileNumber++}{targetExtension}");
             }
 
             return outFileName;

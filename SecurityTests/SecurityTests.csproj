@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><IsTestProject>true</IsTestProject><IsPackable>false</IsPackable></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestFramework" /><PackageReference Include="MSTest.TestAdapter" /><PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="SkiaSharp.NativeAssets.macOS" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32" />
+    <None Include="../MCDSaveEditTests/TestData/Blank.dat" Link="TestData/Blank.dat" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="../DungeonTools/DungeonTools.csproj" /><ProjectReference Include="../PakReader/PakReader.csproj" />
+    <Compile Include="../MCDSaveEditTests/SaveSafetyTests.cs;../MCDSaveEditTests/PakSecurityTests.cs" Link="%(Filename)%(Extension)" />
+    <Compile Include="../MCDSaveEdit/Data/Profiles/**/*.cs;../MCDSaveEdit/Data/Mapping/*.cs;../MCDSaveEdit/Data/Enums/*.cs;../MCDSaveEdit/Core/IEnumerableExtensions.cs;../MCDSaveEdit/Logic/AtomicFileWriter.cs;../MCDSaveEdit/Logic/FileProcessHelper.cs;../MCDSaveEdit/Services/EventLogger.cs" Link="Production/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

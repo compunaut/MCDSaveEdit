@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System;
 
@@ -7,8 +7,8 @@ namespace MCDSaveEdit.Data
     public static partial class Constants
     {
         public const string CURRENT_VERSION_NUMBER = "1.5.8.0";
-        public const string LATEST_RELEASE_GITHUB_URL = "https://github.com/CutFlame/MCDSaveEdit/releases/latest";
-        public const string LATEST_RELEASE_MOD_URL_FORMAT = "https://www.nexusmods.com/minecraftdungeons/mods/{0}?tab=files";
+
+
 
         // The application's name used for identification in the registry.
         public const string APPLICATION_NAME = "MCDSaveEdit";

@@ -1,3 +1,9 @@
+# Personal MCDSaveEdit fork
+
+Based on CutFlame/MCDSaveEdit commit `58fe34e`. This fork removes automatic telemetry and update lookups, modernizes the Windows build to .NET 10, protects save writes, and hardens PAK/image parsing. Changes are local to this repository; nothing is pushed to the original owner.
+
+See [audit/SECURITY-AUDIT.md](audit/SECURITY-AUDIT.md), [audit/UPDATE-PLAN.md](audit/UPDATE-PLAN.md), and [VENDORED.md](VENDORED.md) for the original findings, implementation plan and source provenance. The audit describes the upstream baseline; current validation is recorded separately in [audit/IMPLEMENTATION-STATUS.md](audit/IMPLEMENTATION-STATUS.md).
+
 # &nbsp;[![icon](MCDSaveEdit/Properties/icon.ico)]() Minecraft: Dungeons Save File Editor
 
 [![GitHub](https://img.shields.io/github/license/cutflame/mcdsaveedit)](https://github.com/CutFlame/MCDSaveEdit/blob/master/LICENSE)
@@ -16,9 +22,9 @@ Windows application for modifying [Minecraft: Dungeons](https://www.minecraft.ne
 
 ### Installing and Running
 
-For full features and functionality you need Minecraft: Dungeons installed and preferably in the default install location.
+This is a personal maintenance fork under development. Build from this checkout using the instructions below. Do not use the upstream 2022 release as a build of these changes. Windows runtime, real-game PAK compatibility and Steam Deck/Wine validation remain release gates.
 
-1. Download and extract the latest release (MCDSaveEdit_*.zip) from [the releases section](https://github.com/CutFlame/MCDSaveEdit/releases)
+Before replacing an existing save, the fork writes a same-directory staging file and atomically replaces the destination with a unique `.bak` backup. Keep those backups until you have verified the edited character in the game. Input saves are limited to 64 MiB, and PAK/texture allocations have documented bounds; unsupported files fail instead of allocating without limits.
 
 ---
 
@@ -83,39 +89,28 @@ MCDSaveEdit has a dependency on .NET Framework 4.8 so you could try installing t
 
 ---
 
-### Compiling
+### Building this personal fork
 
-This application was developed entirely in Visual Studio 2022.
+Install the exact .NET SDK in `global.json` and build on Windows:
 
-When cloning be sure to recurse through submodules because there are 2:
-
-- [DungeonTools](https://github.com/CutFlame/DungeonTools/tree/save-file-editor-1.1)
-- [PakReader](https://github.com/CutFlame/PakReader/tree/MCDSaveEdit)
-
-Provide the AES key to decrypt the game files:
-
-`MCDSaveEdit\Data\Secrets.cs`
-```csharp
-namespace MCDSaveEdit.Data
-{
-    public static class Secrets
-    {
-        // Fill in the value for this one
-        public static AesKey[] PAKS_AES_KEYS = new AesKey[] {
-            new AesKey("<AES key for unlocking the MCD .pak files>", ""),
-        };
-
-        // You can leave these empty, they just need to exist
-        public const string GAME_ANALYTICS_GAME_KEY = "";
-        public const string GAME_ANALYTICS_SECRET_KEY = "";
-    }
-}
+```powershell
+dotnet restore MCDSaveEdit.sln --locked-mode
+dotnet build MCDSaveEdit.sln --no-restore -c Release
+dotnet test MCDSaveEditTests/MCDSaveEditTests.csproj --no-build -c Release --filter "TestCategory!=GameIntegration"
+dotnet run --project MCDSaveEdit -- SKIP_GAME_CONTENT
 ```
 
-Another bit of trouble you might run into is the error: "The referenced component 'Windows' could not be found" in `MCDSaveEdit/Data/Constants.cs` line 3: `using Windows.Management.Deployment;`
+Save editing needs no analytics credentials or network connection. Optional installed-game image/localization access needs your locally supplied game-content AES key in the `MCD_PAK_AES_KEY` environment variable (64 hexadecimal characters, optionally prefixed with `0x`). Never commit that value. Select the PAK directory in the folder picker; no private `Secrets.cs` or machine-specific Windows SDK path is required.
 
-- Try the accepted answer [here](https://stackoverflow.com/questions/54454214/how-to-access-windows-management-deployment-namespace-in-a-desktop-project-in-vs).
-- This bit of code is only required for the Microsoft Store version, so if you have the launcher version you can just comment out lines 3 and 54 through 61.
+Cross-platform production-source security tests:
+
+```sh
+dotnet restore SecurityTests/SecurityTests.csproj --locked-mode
+dotnet test SecurityTests/SecurityTests.csproj --no-restore -c Release
+python3 -m unittest discover -s scripts -p 'test_*.py' -v
+```
+
+The GitHub workflow performs the Windows and native-artifact checks and combines them in a single **Final validation** gate. See [SECURITY.md](SECURITY.md). No workflow publishes releases or pushes changes. A GitHub fork/remote has not been configured by this local implementation.
 
 ---
 

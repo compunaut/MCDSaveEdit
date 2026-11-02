@@ -1,4 +1,4 @@
-﻿using FModel;
+using FModel;
 using MCDSaveEdit.Data;
 using MCDSaveEdit.Services;
 using MCDSaveEdit.ViewModels;
@@ -146,7 +146,7 @@ namespace MCDSaveEdit
 
         private bool unlockPakIndex(PakIndex pakIndex)
         {
-            foreach (var key in Secrets.PAKS_AES_KEYS)
+            foreach (var key in GameContentKeys.Load())
             {
                 var keyStr = key.key;
                 byte[] keyBytes;

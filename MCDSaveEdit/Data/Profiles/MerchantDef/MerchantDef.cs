@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace MCDSaveEdit.Save.Models.Profiles
 {
     public class MerchantDef
     {
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.Dictionary<string, System.Text.Json.JsonElement> AdditionalData { get; set; }
+
         [JsonPropertyName("everInteracted")]
         public bool EverInteracted { get; set; }
 

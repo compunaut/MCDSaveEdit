@@ -1,4 +1,4 @@
-﻿using MCDSaveEdit.Data;
+using MCDSaveEdit.Data;
 using MCDSaveEdit.Services;
 using System.Diagnostics;
 using System.Reflection;
@@ -22,19 +22,19 @@ namespace MCDSaveEdit.UI
         private void patreonButton_Click(object sender, RoutedEventArgs e)
         {
             EventLogger.logEvent("patreonButton_Click");
-            Process.Start("https://www.patreon.com/cutflame");
+            Process.Start(new ProcessStartInfo("https://www.patreon.com/cutflame") { UseShellExecute = true });
             this.Close();
         }
         private void buyMeACoffeeButton_Click(object sender, RoutedEventArgs e)
         {
             EventLogger.logEvent("buyMeACoffeeButton_Click");
-            Process.Start("https://www.buymeacoffee.com/cutflame");
+            Process.Start(new ProcessStartInfo("https://www.buymeacoffee.com/cutflame") { UseShellExecute = true });
             this.Close();
         }
         private void koFiButton_Click(object sender, RoutedEventArgs e)
         {
             EventLogger.logEvent("koFiButton_Click");
-            Process.Start("https://ko-fi.com/cutflame");
+            Process.Start(new ProcessStartInfo("https://ko-fi.com/cutflame") { UseShellExecute = true });
             this.Close();
         }
 

@@ -1,4 +1,4 @@
-﻿using MCDSaveEdit;
+using MCDSaveEdit;
 using MCDSaveEdit.Data;
 using MCDSaveEdit.Save.Models.Profiles;
 using MCDSaveEdit.Services;
@@ -21,6 +21,7 @@ namespace MCDSaveEditTests
         private readonly AppModel _model = new AppModel();
 
         [TestMethod]
+        [TestCategory("GameIntegration")]
         public void TestExtractGameFiles()
         {
             string? paksFolderPath = _model.usableGameContentIfExists();
@@ -32,7 +33,7 @@ namespace MCDSaveEditTests
 
             PakFilter? filter = new PakFilter(new[] { Constants.PAKS_FILTER_STRING }, false);
             PakIndex? pakIndex = new PakIndex(path: paksFolderPath!, cacheFiles: true, caseSensitive: true, filter: filter);
-            pakIndex.UseKey(FGuid.Zero, Secrets.PAKS_AES_KEYS[0].key.Substring(2).ToBytesKey());
+            pakIndex.UseKey(FGuid.Zero, GameContentKeys.Load()[0].key.Substring(2).ToBytesKey());
             Assert.AreEqual(80386, pakIndex.Count());
 
             var pakImageResolver = new PakContentResolver(pakIndex, null);
@@ -71,7 +72,7 @@ namespace MCDSaveEditTests
         [TestMethod]
         public async Task TestReadSaveFile()
         {
-            var solutionDirectory = TestUtilities.tryGetProjectDirectoryInfo()?.FullName;
+            var solutionDirectory = AppContext.BaseDirectory;
             Assert.IsNotNull(solutionDirectory);
             var filePath = Path.Combine(solutionDirectory, "TestData", "Blank.dat");
             //var filePath = Path.Combine(Constants.FILE_DIALOG_INITIAL_DIRECTORY, "2533274911688652", "Characters", "Blank.dat");
@@ -127,6 +128,7 @@ namespace MCDSaveEditTests
         [DataRow("SwitchFile.dat")]
         [DataRow("UnreasonableCheating.dat")]
         [DataTestMethod]
+        [TestCategory("GameIntegration")]
         public async Task TestNoDataLossOnWrite(string filename)
         {
             var filePath = Path.Combine(Constants.FILE_DIALOG_INITIAL_DIRECTORY, "2533274911688652", "Characters", filename);

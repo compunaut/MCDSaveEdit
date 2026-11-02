@@ -1,4 +1,4 @@
-﻿using MCDSaveEdit.Data;
+using MCDSaveEdit.Data;
 using MCDSaveEdit.Interfaces;
 using MCDSaveEdit.Save.Models.Enums;
 using MCDSaveEdit.Save.Models.Profiles;
@@ -82,12 +82,9 @@ namespace MCDSaveEdit.Services
 
         public Task loadPakFilesAsync(bool preloadBitmaps = false)
         {
-            var tcs = new TaskCompletionSource<object?>();
-            Task.Run(() => {
-                this.loadPakFiles(preloadBitmaps);
-                tcs.SetResult(null);
-            });
-            return tcs.Task;
+            // Propagate worker failures to the caller instead of leaving a separate
+            // completion source unresolved when malformed game content throws.
+            return Task.Run(() => loadPakFiles(preloadBitmaps));
         }
 
         public void loadPakFiles(bool preloadBitmaps = false)

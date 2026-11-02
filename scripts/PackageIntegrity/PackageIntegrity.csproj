@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <!-- Use the NuGet verifier shipped with the exactly pinned SDK. No new packages. -->
+  <ItemGroup>
+    <Reference Include="$(MSBuildToolsPath)/NuGet.*.dll" />
+    <Reference Include="$(MSBuildToolsPath)/System.Security.Cryptography.Pkcs.dll" />
+    <Reference Include="$(MSBuildToolsPath)/System.Security.Cryptography.ProtectedData.dll" />
+    <Reference Include="$(MSBuildToolsPath)/Newtonsoft.Json.dll" />
+  </ItemGroup>
+</Project>

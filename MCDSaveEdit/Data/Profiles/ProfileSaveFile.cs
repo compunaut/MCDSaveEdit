@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace MCDSaveEdit.Save.Models.Profiles
 {
     public partial class ProfileSaveFile
     {
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.Dictionary<string, System.Text.Json.JsonElement> AdditionalData { get; set; }
+
         [JsonPropertyName("bonus_prerequisites")]
         public string[] BonusPrerequisites { get; set; }
 

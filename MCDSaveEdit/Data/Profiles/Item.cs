@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -9,6 +9,9 @@ namespace MCDSaveEdit.Save.Models.Profiles
 {
     public partial class Item
     {
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.Dictionary<string, System.Text.Json.JsonElement> AdditionalData { get; set; }
+
         [JsonPropertyName("armorproperties")]
         public Armorproperty[]? Armorproperties { get; set; }
 
@@ -72,6 +75,7 @@ namespace MCDSaveEdit.Save.Models.Profiles
             copy.Rarity = this.Rarity;
             copy.Type = this.Type;
             copy.Upgraded = this.Upgraded;
+            copy.AdditionalData = this.AdditionalData == null ? null : new System.Collections.Generic.Dictionary<string, System.Text.Json.JsonElement>(this.AdditionalData);
             return copy;
         }
     }

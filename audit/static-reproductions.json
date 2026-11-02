@@ -1,0 +1,12 @@
+{
+  "note": "Python reproductions of the inspected C# algorithms; not runtime tests of the application.",
+  "json_brace_scanner": {
+    "input": "{\"name\":\"}\",\"xp\":0}",
+    "output": "{\"name\":\"}"
+  },
+  "filename_collision": {
+    "input": "C:\\Saves\\hero.json",
+    "extension": ".json",
+    "output": ".json_1.json"
+  }
+}

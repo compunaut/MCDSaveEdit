@@ -1,0 +1,170 @@
+name: Personal fork validation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# No publishing, PR writes, OIDC credentials, or access to repository secrets.
+permissions:
+  contents: read
+
+concurrency:
+  group: validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  NUGET_XMLDOC_MODE: skip
+
+jobs:
+  portable-security:
+    name: Portable safety and CI gate tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Test CI rejection paths
+        run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+      - name: Locked restore of portable security fixtures
+        run: dotnet restore SecurityTests/SecurityTests.csproj --locked-mode -p:NuGetAudit=true -p:NuGetAuditMode=all -warnaserror:NU1900,NU1901,NU1902,NU1903,NU1904,NU1905
+      - name: Run portable production-source security tests
+        run: dotnet test SecurityTests/SecurityTests.csproj --no-restore -c Release --logger trx --results-directory artifacts/security-tests
+      - name: Retain portable test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: portable-security-tests
+          path: artifacts/security-tests
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-tests:
+    name: Windows build and tests (${{ matrix.configuration }})
+    runs-on: windows-2025
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Locked restore with fail-closed NuGet audit
+        run: dotnet restore MCDSaveEdit.sln --locked-mode -p:NuGetAudit=true -p:NuGetAuditMode=all -warnaserror:NU1900,NU1901,NU1902,NU1903,NU1904,NU1905
+      - name: Build
+        run: dotnet build MCDSaveEdit.sln --no-restore -c ${{ matrix.configuration }} -p:ContinuousIntegrationBuild=true
+      - name: Tests independent of a local game installation
+        run: dotnet test MCDSaveEditTests/MCDSaveEditTests.csproj --no-build --no-restore -c ${{ matrix.configuration }} --filter 'TestCategory!=GameIntegration' --logger trx --results-directory artifacts/tests
+      - name: Retain test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tests-${{ matrix.configuration }}
+          path: artifacts/tests
+          if-no-files-found: error
+          retention-days: 14
+
+  packages:
+    name: Dependency and native validation (${{ matrix.rid }})
+    runs-on: windows-2025
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            architecture: x64
+          - rid: win-x86
+            architecture: x86
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+          architecture: ${{ matrix.architecture }}
+        env:
+          DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet-${{ matrix.architecture }}
+      - name: Locked runtime restore with fail-closed NuGet audit
+        # App RuntimeIdentifiers already restores both RIDs. Passing -r changes
+        # the dependency graph and invalidates the intentionally committed locks.
+        run: dotnet restore MCDSaveEdit.sln --locked-mode -p:NuGetAudit=true -p:NuGetAuditMode=all -warnaserror:NU1900,NU1901,NU1902,NU1903,NU1904,NU1905
+      - name: Audit direct and transitive dependencies
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts/evidence | Out-Null
+          dotnet list MCDSaveEdit.sln package --vulnerable --include-transitive --format json --output-version 1 --no-restore | Out-File -Encoding utf8 artifacts/evidence/vulnerabilities.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/check-vulnerabilities.py artifacts/evidence/vulnerabilities.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet list MCDSaveEdit.sln package --include-transitive --format json --output-version 1 --no-restore | Out-File -Encoding utf8 artifacts/evidence/dependencies.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Publish framework-dependent directory output
+        run: dotnet publish MCDSaveEdit/MCDSaveEdit.csproj --no-restore -c Release -r ${{ matrix.rid }} --self-contained false -p:ContinuousIntegrationBuild=true -o artifacts/publish
+      - name: Build SDK NuGet content-integrity verifier
+        shell: pwsh
+        run: |
+          dotnet restore scripts/PackageIntegrity/PackageIntegrity.csproj --locked-mode
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet build scripts/PackageIntegrity/PackageIntegrity.csproj --no-restore -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise signed-package verification and tamper rejection
+        env:
+          MCD_PACKAGE_INTEGRITY_TOOL: scripts/PackageIntegrity/bin/Release/net10.0/PackageIntegrity.dll
+        run: python -m unittest discover -s scripts -p 'test_*.py' -v
+      - name: Verify packaged native bytes, architecture and checksums
+        run: python scripts/validate-artifacts.py --output artifacts/publish --assets MCDSaveEdit/obj/project.assets.json --rid ${{ matrix.rid }} --evidence artifacts/evidence --integrity-tool scripts/PackageIntegrity/bin/Release/net10.0/PackageIntegrity.dll
+      - name: Load and exercise the native library from the actual Windows package
+        shell: pwsh
+        env:
+          EXPECTED_ARCHITECTURE: ${{ matrix.architecture }}
+          DOTNET_ROOT_X64: ${{ runner.temp }}/dotnet-x64
+          DOTNET_ROOT_X86: ${{ runner.temp }}/dotnet-x86
+        run: |
+          $report = Join-Path $PWD 'artifacts/evidence/native-smoke.json'
+          $application = Join-Path $PWD 'artifacts/publish/MCDSaveEdit.exe'
+          $process = Start-Process -FilePath $application -ArgumentList '--verify-native', "`"$report`"" -PassThru -NoNewWindow
+          if (-not $process.WaitForExit(30000)) {
+            $process.Kill()
+            throw 'Packaged native smoke test exceeded 30 seconds'
+          }
+          if ($process.ExitCode -ne 0) { throw "Packaged native smoke failed with exit code $($process.ExitCode)" }
+          $result = Get-Content -Raw $report | ConvertFrom-Json
+          if ($result.success -ne $true) { throw 'Packaged native smoke did not report success' }
+          if ($result.architecture -ine $env:EXPECTED_ARCHITECTURE) { throw 'Packaged native smoke ran with the wrong process architecture' }
+      - name: Retain validated package and evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: validated-${{ matrix.rid }}
+          path: artifacts
+          if-no-files-found: error
+          retention-days: 14
+
+  final-validation:
+    name: Final validation
+    if: always()
+    needs: [portable-security, windows-tests, packages]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require every prerequisite to pass
+        env:
+          PORTABLE_RESULT: ${{ needs.portable-security.result }}
+          TESTS_RESULT: ${{ needs.windows-tests.result }}
+          PACKAGES_RESULT: ${{ needs.packages.result }}
+        run: |
+          test "$PORTABLE_RESULT" = success
+          test "$TESTS_RESULT" = success
+          test "$PACKAGES_RESULT" = success
