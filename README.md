@@ -1,6 +1,6 @@
 # Personal MCDSaveEdit fork
 
-Based on CutFlame/MCDSaveEdit commit `58fe34e`. This fork removes automatic telemetry and update lookups, modernizes the Windows build to .NET 10, protects save writes, and hardens PAK/image parsing. Changes are local to this repository; nothing is pushed to the original owner.
+Based on CutFlame/MCDSaveEdit commit `58fe34e`. This fork removes automatic telemetry and update lookups, modernizes the Windows build to .NET 10, protects save writes, and hardens PAK/image parsing. Changes are maintained in [compunaut/MCDSaveEdit](https://github.com/compunaut/MCDSaveEdit); nothing is pushed to the original owner.
 
 See [audit/SECURITY-AUDIT.md](audit/SECURITY-AUDIT.md), [audit/UPDATE-PLAN.md](audit/UPDATE-PLAN.md), and [VENDORED.md](VENDORED.md) for the original findings, implementation plan and source provenance. The audit describes the upstream baseline; current validation is recorded separately in [audit/IMPLEMENTATION-STATUS.md](audit/IMPLEMENTATION-STATUS.md).
 
@@ -110,7 +110,7 @@ dotnet test SecurityTests/SecurityTests.csproj --no-restore -c Release
 python3 -m unittest discover -s scripts -p 'test_*.py' -v
 ```
 
-The GitHub workflow performs the Windows and native-artifact checks and combines them in a single **Final validation** gate. See [SECURITY.md](SECURITY.md). No workflow publishes releases or pushes changes. A GitHub fork/remote has not been configured by this local implementation.
+The GitHub workflow performs the Windows and native-artifact checks and combines them in a single **Final validation** gate. See [SECURITY.md](SECURITY.md). No workflow publishes releases or pushes changes. The personal fork is [compunaut/MCDSaveEdit](https://github.com/compunaut/MCDSaveEdit). The hardening work is on `codex/personal-fork-hardening`.
 
 ---
 

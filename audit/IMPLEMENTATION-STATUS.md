@@ -4,7 +4,7 @@ Date: November 1, 2026. Local implementation complete; hosted Windows CI and man
 
 ## Scope and repository state
 
-The local branch is `codex/personal-fork-hardening`, based on audited upstream commit `58fe34efa4cd458992f7dc5af7258450f2e4a1bf`. Changes are staged for review, not committed or pushed. No Git remote is configured and no remote repository has been created. Nothing has been sent to the original owner. The ignored `upstream/` audit checkout remains unchanged.
+The local branch is `codex/personal-fork-hardening`, based on audited upstream commit `58fe34efa4cd458992f7dc5af7258450f2e4a1bf`. The validated tree is published on `codex/personal-fork-hardening` in the existing public [compunaut/MCDSaveEdit](https://github.com/compunaut/MCDSaveEdit) fork. `origin` points only to that personal fork; its master branch remains unchanged. Nothing has been sent to the original owner. The ignored `upstream/` audit checkout remains unchanged.
 
 Three sub-agents implemented independent save-safety, PAK/native, and CI work. The parent integrated and compiled their changes. Agents then reviewed each other's work; this caught an introduced wrong-AES-key retry regression, which was fixed and covered with an encrypted synthetic PAK test before final validation.
 
@@ -43,7 +43,7 @@ Evidence is local under `artifacts/final-validation/`: per-check logs, TRX, resu
 
 ## Not yet validated / remaining release gates
 
-- This host is macOS. Windows application/test assemblies cross-compile here, but the WPF UI, full Windows test suite and published-executable native-load modes have not executed here. They are configured as required Windows CI jobs; no hosted CI run has occurred without a remote repository.
+- This host is macOS. Windows application/test assemblies cross-compile here, but the WPF UI, full Windows test suite and published-executable native-load modes have not executed here. They are configured as required Windows CI jobs. The first [hosted validation run](https://github.com/compunaut/MCDSaveEdit/actions/runs/41369153040) was triggered after publication; the local results above do not claim that hosted Windows execution has passed.
 - Real installed-game encrypted PAK compatibility, console variants beyond available fixtures, and manual character loading after edits require disposable copies and the appropriate local game/key. The synthetic encrypted PAK test establishes key-retry behavior but does not substitute for a real game fixture.
 - Steam Deck/Wine compatibility with .NET 10 is unverified. Existing upstream Steam Deck instructions are historical and must not be treated as validation of this fork.
 - Builds retain inherited nullable/platform warnings (Release compile reported 270 warnings, 0 errors). This change does not claim a warning-free codebase or exhaustive fuzz/native analysis.
@@ -52,4 +52,4 @@ Evidence is local under `artifacts/final-validation/`: per-check logs, TRX, resu
 
 ## Next hosted step
 
-Choose the personal repository destination/visibility, push only there, and require **Final validation** in that repository's branch protection. The CI workflow never pushes back or opens PRs against CutFlame/MCDSaveEdit. Complete manual Windows/game/Wine checks before any release.
+The destination is the existing public `compunaut/MCDSaveEdit` fork. Require **Final validation** in that repository's branch protection before merging. The CI workflow never pushes back or opens PRs against CutFlame/MCDSaveEdit. Complete manual Windows/game/Wine checks before any release.
