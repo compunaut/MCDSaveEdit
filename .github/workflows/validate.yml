@@ -130,10 +130,13 @@ jobs:
         shell: pwsh
         env:
           EXPECTED_ARCHITECTURE: ${{ matrix.architecture }}
-          DOTNET_ROOT_X64: ${{ runner.temp }}/dotnet-x64
-          DOTNET_ROOT_X86: ${{ runner.temp }}/dotnet-x86
+          DOTNET_DISABLE_GUI_ERRORS: '1'
         run: |
           $report = Join-Path $PWD 'artifacts/evidence/native-smoke.json'
+          # setup-dotnet may append an architecture directory (notably x86).
+          # The apphost's architecture-specific root takes precedence over DOTNET_ROOT.
+          $runtimeRoot = Split-Path (Get-Command dotnet).Source
+          Set-Item -Path "Env:DOTNET_ROOT_$($env:EXPECTED_ARCHITECTURE.ToUpperInvariant())" -Value $runtimeRoot
           $application = Join-Path $PWD 'artifacts/publish/MCDSaveEdit.exe'
           $process = Start-Process -FilePath $application -ArgumentList '--verify-native', "`"$report`"" -PassThru -NoNewWindow
           if (-not $process.WaitForExit(30000)) {
