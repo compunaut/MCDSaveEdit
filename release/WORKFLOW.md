@@ -1,12 +1,12 @@
-# Publishing v1.0.1 with attestations
+# Publishing v1.0.2 with attestations
 
-The workflow `.github/workflows/release.yml` runs manually from `master` or on the exact `v1.0.1` tag. It only publishes to `compunaut/MCDSaveEdit`, requires the source commit to be on `master`, and checks the application version is `1.0.1.0`. All standard validation runs against that same commit through the reusable validation workflow.
+The workflow `.github/workflows/release.yml` runs manually from `master` or on the exact `v1.0.2` tag. It only publishes to `compunaut/MCDSaveEdit`, requires the source commit to be on `master`, and checks the application version is `1.0.2.0`. All standard validation runs against that same commit through the reusable validation workflow.
 
 Before publication, an administrator must enable **Settings → General → Releases → Enable release immutability**. This is required for GitHub's native release attestation binding the tag, commit, and all release assets. It cannot be replaced by a build-provenance attestation.
 
 The immutable-policy REST endpoint requires **Administration: read**, which the normal Actions `GITHUB_TOKEN` cannot request. Configure repository secret `RELEASE_POLICY_READ_TOKEN` with a fine-grained token limited to this repository and Administration: read only (no administration write). It is used only for the two immutable-policy checks and is never passed to builds or package signing. The workflow falls back to `GITHUB_TOKEN`, but if GitHub refuses the policy read, the workflow stops without creating a release. Do not grant a broader token to bypass this check; supply only the documented read permission.
 
-Use **Actions → Release v1.0.1 → Run workflow → master**. Alternatively:
+Use **Actions → Release v1.0.2 → Run workflow → master**. Alternatively:
 
 ```sh
 gh workflow run release.yml --repo compunaut/MCDSaveEdit --ref master
@@ -21,9 +21,9 @@ Existing releases or drafts are rejected and never overwritten. If upload/public
 Verify downloads:
 
 ```sh
-gh release verify v1.0.1 --repo compunaut/MCDSaveEdit
-gh release verify-asset v1.0.1 MCDSaveEdit-v1.0.1-win-x64.zip --repo compunaut/MCDSaveEdit
-gh attestation verify MCDSaveEdit-v1.0.1-win-x64.zip \
+gh release verify v1.0.2 --repo compunaut/MCDSaveEdit
+gh release verify-asset v1.0.2 MCDSaveEdit-v1.0.2-win-x64.zip --repo compunaut/MCDSaveEdit
+gh attestation verify MCDSaveEdit-v1.0.2-win-x64.zip \
   --repo compunaut/MCDSaveEdit \
   --signer-workflow compunaut/MCDSaveEdit/.github/workflows/release.yml
 ```

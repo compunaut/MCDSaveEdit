@@ -27,11 +27,11 @@ def check_policy(policy, existing):
     if policy.get('enabled') is not True:
         raise ValueError('Repository release immutability is not enabled; no release may be published.')
     if existing is not None:
-        raise ValueError('v1.0.1 already exists (including drafts). Never overwrite an existing release.')
+        raise ValueError('v1.0.2 already exists (including drafts). Never overwrite an existing release.')
 
 
 if __name__ == '__main__':
     if os.environ.get('GITHUB_REPOSITORY') != REPOSITORY:
         raise SystemExit('Release destination must be the personal compunaut/MCDSaveEdit fork.')
-    check_policy(request('/immutable-releases'), request('/releases/tags/v1.0.1', allow_missing=True))
-    print('GitHub confirms immutable releases are enabled; v1.0.1 does not exist.')
+    check_policy(request('/immutable-releases'), request('/releases/tags/v1.0.2', allow_missing=True))
+    print('GitHub confirms immutable releases are enabled; v1.0.2 does not exist.')

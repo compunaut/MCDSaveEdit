@@ -110,7 +110,7 @@ dotnet test SecurityTests/SecurityTests.csproj --no-restore -c Release
 python3 -m unittest discover -s scripts -p 'test_*.py' -v
 ```
 
-The GitHub workflow performs the Windows and native-artifact checks and combines them in a single **Final validation** gate. See [SECURITY.md](SECURITY.md). The dedicated [release workflow](release/WORKFLOW.md) publishes v1.0.1 only after validation and immutable-release policy checks. Workflows never push commits. The personal fork is [compunaut/MCDSaveEdit](https://github.com/compunaut/MCDSaveEdit). The hardening work is on `codex/personal-fork-hardening`.
+The GitHub workflow performs the Windows and native-artifact checks and combines them in a single **Final validation** gate. See [SECURITY.md](SECURITY.md). The dedicated [release workflow](release/WORKFLOW.md) publishes v1.0.2 only after validation and immutable-release policy checks. Workflows never push commits. The personal fork is [compunaut/MCDSaveEdit](https://github.com/compunaut/MCDSaveEdit). The hardening work is on `codex/personal-fork-hardening`.
 
 ---
 

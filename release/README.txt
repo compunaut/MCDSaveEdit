@@ -1,4 +1,4 @@
-MCDSaveEdit personal fork v1.0.1
+MCDSaveEdit personal fork v1.0.2
 https://github.com/compunaut/MCDSaveEdit
 
 Extract the complete ZIP into a writable folder. Install the serviced Microsoft
@@ -24,6 +24,6 @@ The matching source archive and licenses are included in the GitHub release.
 Retain all notices. See THIRD-PARTY-NOTICES.md and UPSTREAM-CREDITS.md.
 
 Verify after downloading with a recent GitHub CLI:
-  gh release verify v1.0.1 --repo compunaut/MCDSaveEdit
-  gh release verify-asset v1.0.1 PACKAGE.zip --repo compunaut/MCDSaveEdit
+  gh release verify v1.0.2 --repo compunaut/MCDSaveEdit
+  gh release verify-asset v1.0.2 PACKAGE.zip --repo compunaut/MCDSaveEdit
   gh attestation verify PACKAGE.zip --repo compunaut/MCDSaveEdit
